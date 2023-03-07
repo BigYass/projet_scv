@@ -1,19 +1,23 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
 
-SRCS = liste.c 
-OBJS = $(SRCS:.c=.o)
-TARGET = liste
+SRC = src
+BIN = bin
+OBJ = obj
+
+SRCS = src/hash.c src/liste.c src/main.c
+OBJS = $(SRCS:$(SRC)/%.c=$(OBJ)/%.o)
+TARGET = main
 
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $(BIN)/$@ $^
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $<
+$(OBJ)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(BIN)/* $(OBJ)/*.o

@@ -2,14 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct cell {
-    char* data;
-    struct cell* next;
-} Cell;
-
-
-typedef Cell* List;
-
+#include "liste.h"
 
 List* initList() {
     List* l = malloc(sizeof(List));
@@ -82,21 +75,21 @@ List* stol(char* s){
     return l;
 }
 
-int main(int argc, char const *argv[])
-{
-    List* l = initList();
-    Cell* c1 = buildCell("msg");
-    Cell* c2 = buildCell("msg2");
-    insertFirst(l,c1);
-    insertFirst(l,c2);
-    char* s = ltos(l);
-    printf("%s\n",s);
-    /*List* l2 = stol(s);
+// int main(int argc, char const *argv[])
+// {
+//     List* l = initList();
+//     Cell* c1 = buildCell("msg");
+//     Cell* c2 = buildCell("msg2");
+//     insertFirst(l,c1);
+//     insertFirst(l,c2);
+//     char* s = ltos(l);
+//     printf("%s\n",s);
+//     /*List* l2 = stol(s);
     
-    Cell * cursor = *l2;
+//     Cell * cursor = *l2;
 
-    printf("Premier : %s",cursor->data);
-    printf("Premier : %s",cursor->next->data);
-    */
-    return 0;
-}
+//     printf("Premier : %s",cursor->data);
+//     printf("Premier : %s",cursor->next->data);
+//     */
+//     return 0;
+// }
