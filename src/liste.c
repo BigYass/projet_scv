@@ -1,11 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
-#include <stdbool.h>
-
-#include "liste.h"
 #include "const.h"
+#include "liste.h"
+#include "hash.h"
 
 List* initList() {
     List* l = malloc(sizeof(List));
@@ -25,26 +20,31 @@ void insertFirst(List *L, Cell* C){
 }
 
 void freeList(List *L){
-    Cell *cursor = *L;
+    if(L != NULL) return;
 
+    Cell *cursor = *L;
     free(L);
 
     Cell *prev = cursor;
+    cursor = cursor->next;
     while(cursor){
+        if(prev) free(prev);
         cursor = cursor->next;
-        free(prev);
     }
-    free(prev);
+    if(prev) free(prev);
 }
 
 char* ctos(Cell* c){
-    return c->data;
+    return strdup(c->data);
 }
 
 char* ltos(List* L){
     char *s = malloc(sizeof(char) * MAX_BUF_SIZE);
+    if(s == NULL || L == NULL) return NULL;
+
     strcat(s, (*L)->data);
-    Cell *cursor = (*L)->next;
+    Cell *cursor = NULL;
+    cursor = (*L)->next;
     while(cursor != NULL){
         strcat(s, "|");
         strcat (s,ctos(cursor));
@@ -108,7 +108,6 @@ char* list_string(List* L){
     return buf;
 }
 
-
 void ltof(List* L, const char* path){
     char *s = ltos(L);
     FILE *f = fopen(path, "w");
@@ -123,11 +122,19 @@ List* ftol(const char* path){
     char buf[MAX_BUF_SIZE];
     FILE *f = fopen(path, "r");
 
+    if(f == NULL){
+        fprintf(stderr, "%sErreur lors de l'ouverture de %s!\n", path);
+        return NULL;
+    }
+
     fgets(buf, MAX_BUF_SIZE, f);
 
-    fclose(f);
+    #ifdef DEBUG
+    printf("[DEBUG]buf = %s%s%s\n", RED, buf, RESET);
+    #endif
 
     l = stol(buf);
+    fclose(f);
 
     return l;
 }
@@ -170,19 +177,41 @@ void cp(const char *to, const char *from){
 
     if(source != NULL){
         char buf[MAX_BUF_SIZE];
+
+        char *ptr = NULL;
+        do
+        {
+            char *ptr = strchr(to, '/');
+            if(ptr){
+                strncpy(buf, to, ptr - to);
+                buf[ptr - to] = '\0';
+
+                char cmd[MAX_BUF_SIZE];
+                sprintf(cmd, "mkdir %s", buf);
+                system(cmd);
+
+                to = ptr + 1;
+
+                ptr = strchr(to, '/');
+            }
+        } while (ptr > 0);
+        
         FILE *dest = fopen(to, "w");
+
+        if(dest == NULL)
+        {
+            printf("[DEBUG] Erreur lors de la création de %s\"%s\"%s...\n", RED, to, RESET);
+        }
 
         while(fgets(buf, MAX_BUF_SIZE, source))
             fputs(buf, dest);
 
-        fclose(source);
         fclose(dest);
     }
     else{
-        #ifdef DEBUG
         printf("[DEBUG] Fichier %s\"%s\"%s introuvable...\n", RED, from, RESET);
-        #endif
     }
+    fclose(source);
 }
 
 char* hashToPath(const char* hash){
@@ -194,10 +223,20 @@ char* hashToPath(const char* hash){
 
     strcpy(path + 3, hash + 2);
 
+    path[65] = '\0';
+
     return path;
 }
 
 void blobFile(const char* file){
-    static const char* tmp_path = ".tmp/";
+    char path[MAX_BUF_SIZE];
     
+    char *hash_path = hashToPath(sha256file(file));
+    strcat(path, hash_path);
+
+    free(hash_path);
+
+    strcat(path, file);
+
+    cp(path, file);
 }

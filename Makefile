@@ -4,6 +4,7 @@ CFLAGS = -Wall -Wextra -g
 SRC = src
 BIN = bin
 OBJ = obj
+TMP = .tmp
 
 SRCS = src/hash.c src/liste.c src/main.c
 OBJS = $(SRCS:$(SRC)/%.c=$(OBJ)/%.o)
@@ -20,4 +21,4 @@ $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(BIN)/* $(OBJ)/*.o
+	rm -f $(BIN)/* $(OBJ)/*.o $(TMP)/*

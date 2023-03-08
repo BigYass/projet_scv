@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "const.h": "c",
-    "liste.h": "c"
+    "liste.h": "c",
+    "limits.h": "c",
+    "syslimits.h": "c"
   }
 }
