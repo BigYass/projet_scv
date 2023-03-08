@@ -76,7 +76,7 @@ Cell* searchList(List* L, const char* str){
 List* stol(const char* s){
     List* l = initList();
 
-    char buffer[MAX_BUF_SIZE];
+    char *buffer = malloc(sizeof(char) * MAX_BUF_SIZE);
 
     //Tant que s n'est pas NULL et non égale à '\0'
     while(s && s[0]){
@@ -94,18 +94,9 @@ List* stol(const char* s){
 
     if(s && s[0]) //Cas où la chapine de charactère ne finis par '|'
         insertFirst(l, buildCell(s));
+
+    free(buffer);
     return l;
-}
-
-char* list_string(List* L){
-    char *buf = malloc(sizeof(char) * MAX_BUF_SIZE), delim[5] = {0};
-    for(Cell *cursor = *L; cursor != NULL; strcpy(delim, " -> \0")){
-        strcat(buf, delim);
-        strcat(buf, cursor->data);
-        cursor = cursor->next;
-    }
-
-    return buf;
 }
 
 void ltof(List* L, const char* path){
@@ -119,11 +110,11 @@ void ltof(List* L, const char* path){
 
 List* ftol(const char* path){
     List *l;
-    char buf[MAX_BUF_SIZE];
+    char *buf = malloc(sizeof(char) * MAX_BUF_SIZE);
     FILE *f = fopen(path, "r");
 
     if(f == NULL){
-        fprintf(stderr, "%sErreur lors de l'ouverture de %s!\n", path);
+        fprintf(stderr, "%sErreur lors de l'ouverture de %s%s!\n", RED, path, RESET);
         return NULL;
     }
 
@@ -134,6 +125,7 @@ List* ftol(const char* path){
     #endif
 
     l = stol(buf);
+    free(buf);
     fclose(f);
 
     return l;
@@ -148,9 +140,11 @@ List* listdir(const char* root_dir){
     if (dp != NULL)
     {
         l = initList();
-        while ((ep = readdir(dp)) != NULL)
+        ep = readdir(dp);
+        while (ep != NULL)
         {
             insertFirst(l, buildCell(ep->d_name));
+            ep = readdir(dp);
         }
     }
     else{
@@ -176,7 +170,7 @@ void cp(const char *to, const char *from){
     FILE *source = fopen(from, "r");
 
     if(source != NULL){
-        char buf[MAX_BUF_SIZE];
+        char *buf = malloc(sizeof(char)*MAX_BUF_SIZE);
 
         char *ptr = NULL;
         do
@@ -206,6 +200,7 @@ void cp(const char *to, const char *from){
         while(fgets(buf, MAX_BUF_SIZE, source))
             fputs(buf, dest);
 
+        free(buf);
         fclose(dest);
     }
     else{
@@ -215,7 +210,7 @@ void cp(const char *to, const char *from){
 }
 
 char* hashToPath(const char* hash){
-    char* path = malloc(sizeof(char) * (strlen(hash) + 1));
+    char* path = malloc(sizeof(char) * 66);
 
     path[0] = hash[0];
     path[1] = hash[1];
@@ -229,14 +224,16 @@ char* hashToPath(const char* hash){
 }
 
 void blobFile(const char* file){
-    char path[MAX_BUF_SIZE];
+    char *path = malloc(sizeof(char)*MAX_BUF_SIZE);
     
     char *hash_path = hashToPath(sha256file(file));
     strcat(path, hash_path);
 
-    free(hash_path);
 
     strcat(path, file);
 
     cp(path, file);
+
+    free(hash_path);
+    free(path);
 }
