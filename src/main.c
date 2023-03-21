@@ -34,7 +34,7 @@ int main()
 
     puts("Reconversion de la chaine en liste...\n");
     List* l2 = stol(s);
-    printf("Résultat : %s%s%s\n\n", GREEN, list_string(l2), RESET);
+    printf("Résultat : %s%s%s\n\n", GREEN, ltos(l2), RESET);
 
 
     // TEST FICHIER ET DOSSIER
@@ -48,8 +48,8 @@ int main()
 
     puts("Listage de tout les fichiers du dossier courant...\n");
     List* all_files = listdir(".");
-    printf("Résultat : %s\n", list_string(all_files));
-    
+    printf("Résultat : %s\n", ltos(all_files));
+
     printf("Vérification de l'existence de : %s%s%s\n", YELLOW, filename, RESET);
     printf("Résultat : %s%s%s\n", RED, TO_BOOL(file_exists(filename)), RESET);
 

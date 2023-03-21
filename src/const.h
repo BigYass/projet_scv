@@ -10,7 +10,7 @@
 #define LINUX //Pour compiler sur Linux
 // #define WINDOWS //Pour compiler sur Windows
 
-#define DEBUG //Beaucoup de Verbose
+// #define DEBUG //Beaucoup de Verbose
 
 // Réinitialise les formats et la couleur du texte
 #define RESET   "\033[0m"

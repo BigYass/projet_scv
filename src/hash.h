@@ -1,6 +1,20 @@
 #ifndef HASH_LIB
 #define HASH_LIB
 
+typedef struct
+{
+    char *name;
+    char *hash;
+    int mode;
+} WorkFile;
+
+typedef struct
+{
+    WorkFile *tab;
+    int size;
+    int n;
+} WorkTree;
+
 /**
  * @brief Fait la somme de hashage de l'algorithme sha256 et stock le résultat dans dans un fichier
  * 
@@ -9,7 +23,7 @@
  * @return int Retourne le résultat de l'appel de la fonction 
  * 
  */
-int hashFile (const char* source, const char* dest);
+int hashFile(const char *source, const char *dest);
 
 /**
  * @brief Renvoie la somme de hachage de l'algorithme sha256 du fichier donné en paramètre.
@@ -17,6 +31,6 @@ int hashFile (const char* source, const char* dest);
  * @param file Nom du fichier. 
  * @return char* Somme de hachage. NULL en cas d'erreur
  */
-char* sha256file(const char* file);
+char *sha256file(const char *file);
 
 #endif

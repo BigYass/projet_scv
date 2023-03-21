@@ -65,14 +65,6 @@ char* ctos(Cell* c);
 char* ltos(List* L);
 
 /**
- * @brief Convertit une liste en chaine de charactère dans le format : "cell1 -> cell2 -> ... -> cellN"
- * 
- * @param L La liste à convertir
- * @return char* La chaine de charactère nouvellement alloué de la liste
- */
-char* list_string(List* L);
-
-/**
  * @brief Renvoie le i-ème éléménts de la liste. NULL si il n'est pas dans la liste
  * 
  * @param L La liste
