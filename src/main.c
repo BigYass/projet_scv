@@ -4,6 +4,7 @@
 #include "const.h"
 #include "hash.h"
 #include "liste.h"
+#include "file.h"
 
 #define TO_BOOL(NUM) (NUM ? "false" : "true")
 
