@@ -11,6 +11,7 @@ Cell* buildCell(const char* h) {
     Cell* c = malloc(sizeof(Cell));
 
     c->data = strdup(h);
+    c->next = NULL;
     return c;
 }
 
@@ -39,19 +40,25 @@ char* ctos(Cell* c){
 }
 
 char* ltos(List* L){
-    char *s = malloc(sizeof(char) * MAX_BUF_SIZE);
-    if(s == NULL || L == NULL) return NULL;
+    int size = MAX_BUF_SIZE;
+    char *s = malloc(sizeof(char) * size);
+    if(s == NULL || L == NULL || *L == NULL) return NULL;
+
+    memset(s, 0, size);
 
     strcat(s, (*L)->data);
     Cell *cursor = NULL;
     cursor = (*L)->next;
     while(cursor != NULL){
+        if(size < strlen(s) + strlen(cursor->data) + 1){
+            size *= 2; s = realloc(s, sizeof(char) * size);
+        }
         strcat(s, "|");
         strcat (s,ctos(cursor));
         cursor = cursor->next;
     }
 
-    return s;
+    return strdup(s);
 }
 
 Cell* listGet(List* L, int i){

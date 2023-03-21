@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "const.h"
+#include "hash.h"
 
 int hashFile (const char* source, const char* dest) {
     #ifdef DEBUG
