@@ -1,6 +1,8 @@
 #ifndef FILE_LIB
 #define FILE_LIB
 
+#include <stdbool.h>
+
 #include "liste.h"
 
 

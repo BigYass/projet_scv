@@ -5,11 +5,18 @@
 #include "const.h"
 #include "liste.h"
 #include "hash.h"
+#include "debug.h"
 
 
 
 List* initList() {
     List* l = malloc(sizeof(List));
+
+    if(l == NULL){
+        err_log(E_ERR, "Erreur lors de l'allocation initiale d'une liste. Pas assez de RAM ?");
+        return NULL;
+    }
+
     *l = NULL;
     return l;
 }
@@ -17,39 +24,55 @@ List* initList() {
 Cell* buildCell(const char* h) {
     Cell* c = malloc(sizeof(Cell));
 
+    if(c == NULL){
+        err_log(E_ERR, "Erreur lors de l'allocation initiale d'une cellule de liste. Pas assez RAM ?");
+        return NULL;
+    }
+
     c->data = strdup(h);
     c->next = NULL;
     return c;
 }
 
 void insertFirst(List *L, Cell* C){
+    if(C == NULL || L == NULL)
+        err_logf(E_ERR, "Erreur: C = (0x%x) // L = (0x%x)", L, C);
+
     C->next = *L;
     *L = C;
 }
 
 void freeList(List *L){
-    if(L != NULL) return;
+    if(L == NULL) {
+        err_log(E_WARN, "Tentative de libérée une liste null...");
+        return;
+    }
 
     Cell *cursor = *L;
-    free(L);
 
-    Cell *prev = cursor;
-    cursor = cursor->next;
-    while(cursor){
-        if(prev) free(prev);
+    while(cursor != NULL){
+        Cell *prev = cursor;
         cursor = cursor->next;
+        if(prev) free(prev);
     }
-    if(prev) free(prev);
+    free(L);
 }
 
 char* ctos(Cell* c){
+    if(c == NULL){
+        err_log(E_ERR, "Tentative de conversion d'une cellule null...");
+        return "";
+    }
     return strdup(c->data);
 }
 
 char* ltos(List* L){
-    int size = MAX_BUF_SIZE;
+    size_t size = MAX_BUF_SIZE;
     char *s = malloc(sizeof(char) * size);
-    if(s == NULL || L == NULL || *L == NULL) return NULL;
+    if(s == NULL || L == NULL || *L == NULL) {
+        err_logf(E_ERR, "Erreur: s = \"%s\"\n\tL = 0x%x", s, L);
+        return NULL;
+    }
 
     memset(s, 0, size);
 
@@ -60,6 +83,9 @@ char* ltos(List* L){
         //Si la chaine de charactère n'est pas assez longue on double la capacité
         if(size < strlen(s) + strlen(cursor->data) + 1){ 
             size *= 2; s = realloc(s, sizeof(char) * size);
+            if(s == NULL){
+                err_log(E_ERR, "Erreur lors de l'allocation de s");
+            }
         }
         strcat(s, "|");
         strcat (s,ctos(cursor));
@@ -73,6 +99,10 @@ char* ltos(List* L){
 }
 
 Cell* listGet(List* L, int i){
+    if(L == NULL){
+        err_log(E_WARN, "Tentative de parcours d'une liste vide");
+        return NULL;
+    }
     Cell *cursor = *L;
     for(;i > 0; i--){
         if (!cursor) return NULL;
@@ -82,6 +112,10 @@ Cell* listGet(List* L, int i){
 }
 
 Cell* searchList(List* L, const char* str){
+    if(L == NULL || str == NULL){
+        err_logf(E_WARN, "Erreur: Paramètre nul (s = \"%s\", L = 0x%x)", str, L);
+        return NULL;
+    }
     List cursor = (*L)->next;
     while(cursor){
         if(strcmp(cursor->data,str)==0)return cursor;
@@ -92,28 +126,13 @@ Cell* searchList(List* L, const char* str){
 
 List* stol(const char* s){
     List* l = initList();
+    char* s_buf = strdup(s);
 
-    char buffer[MAX_BUF_SIZE];
-    memset(buffer, 0, MAX_BUF_SIZE);
-
+    char *token = strtok(s_buf, "|"); //On cherche le prochain mot
     //Tant que s n'est pas NULL et non égale à '\0'
-    while(s && s[0]){
-        char *ptr = strchr(s, '|'); //On cherche le prochain séparateur
-        if (ptr == NULL) //Si on ne trouve plus de séparateur on quite la boucle et on ajoute la dernière cellule en bas
-            break;
-        
-        //On place la chaine de charactère du début de s jusqu'au '|' trouvé
-        strncpy(buffer, s, ptr - s);
-        buffer[ptr - s] = '\0';
-        
-        insertFirst(l, buildCell(buffer));
+    do insertFirst(l, buildCell(token)); 
+    while((token = strtok(NULL, "|")) != NULL);
 
-        //On reprend s après le '|' trouvé. Par exemple "abc|def" -> "def"
-        s = ptr + 1;
-    }
-
-    if(s && s[0]) //Cas où la chaine de charactère ne finis pas par LISTE_SEPARATOR
-        insertFirst(l, buildCell(s));
-
+    free(s_buf);
     return l;
 }

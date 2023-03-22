@@ -5,12 +5,21 @@
  * @brief Taille standard pour l'allocation sur le tas des buffers
  * 
  */
-#define MAX_BUF_SIZE 0xff
+#define MAX_BUF_SIZE 0x100
 
 #define LINUX //Pour compiler sur Linux
-// #define WINDOWS //Pour compiler sur Windows
+// #define WINDOWS //Pour compiler sur Windows (non fait)
 
-// #define DEBUG //Beaucoup de Verbose
+/**
+ * @brief Niveau de debug |
+ * 0 : Aucun debug |
+ * 1 : Erreur seulement | 
+ * 2 : Erreur et Warnings
+ * 
+ */
+#define DEBUG 2
+
+#define TMP_DIRECTORY ".tmp"
 
 // Réinitialise les formats et la couleur du texte
 #define RESET   "\033[0m"

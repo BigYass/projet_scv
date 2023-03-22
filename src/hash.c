@@ -4,30 +4,21 @@
 
 #include "const.h"
 #include "hash.h"
+#include "debug.h"
 
 int hashFile (const char* source, const char* dest) {
-    #ifdef DEBUG
-    printf("[DEBUG]Début de la fonction hashFile\n");
-    #endif
 
-    char cmd[MAX_BUF_SIZE];
+    char cmd[MAX_BUF_SIZE] = "\0";
 
     sprintf(cmd, "sha256sum \"%s\" > \"%s\"", source, dest);
-
-    #ifdef DEBUG
-    printf("[DEBUG]Fin de fonction %shashFile%s\n", GREEN, RESET);
-    #endif
 
     return system(cmd);
 }
 
 char* sha256file(const char* file){
-    #ifdef DEBUG
-    printf("[DEBUG]Début de la fonction %ssha256file%s\n", GREEN, RESET);
-    #endif
 
-    char fname[MAX_BUF_SIZE];
-    sprintf(fname,  ".tmp/%s_hash.tmp", file);
+    char fname[MAX_BUF_SIZE] = "\0";
+    sprintf(fname,  "%s/%s_hash.tmp", TMP_DIRECTORY, file);
 
     hashFile(file, fname);
 

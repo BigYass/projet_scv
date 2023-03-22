@@ -1,0 +1,68 @@
+#include <stdio.h>
+
+#include "const.h"
+#include "hash.h"
+#include "liste.h"
+#include "file.h"
+#include "test.h"
+
+void test_hash(){
+  // TEST HACHAGE
+    static const char* filename = "Makefile";
+    
+    printf("Hash de %s : ", filename);
+    char *hash = sha256file(filename);
+    printf("%s%s%s\n",GREEN, hash, RESET);
+}
+
+void test_list(){
+    // TEST CELLULES ET LISTES
+    puts("Creation de la liste et des cellules...");
+    List* l = initList();
+    
+    insertFirst(l,buildCell("Amethyste"));
+    insertFirst(l,buildCell("Diamant"));
+    insertFirst(l,buildCell("Emeraude"));
+    insertFirst(l,buildCell("Rubis"));
+    insertFirst(l,buildCell("Saphir"));
+
+    puts("Conversion de la liste en chaine de charactere...");
+    char* s = ltos(l);
+    printf("Conversion : %s%s%s\n",GREEN, s, RESET);
+
+    puts("Reconversion de la chaine en liste...");
+    List* l2 = stol(s);
+    printf("Résultat : %s%s%s\n", GREEN, ltos(l2), RESET);
+}
+
+void test_files(){
+    // TEST FICHIER ET DOSSIER
+    static const char* filename = "Makefile";
+    const char* hash = sha256file(filename);
+    List *l2 = stol("Amethyste|Diamant|Emeraude|Rubis|Saphir");
+
+    const char* tmpfile = ".tmp/burger.list";
+    printf("Stockage de la liste dans : %s%s%s \n", YELLOW, tmpfile, RESET);
+    ltof(l2, tmpfile);
+
+    printf("Récupération de la liste à partir du fichier %s%s%s...\n", YELLOW, tmpfile, RESET);
+    List *l3 = ftol(tmpfile);
+    printf("Résultat : %s%s%s\n", GREEN, ltos(l3), RESET);
+
+    puts("Listage de tout les fichiers du dossier courant...\n");
+    List* all_files = listdir(".");
+    printf("Résultat : %s%s%s\n", GREEN, ltos(all_files), RESET);
+
+    printf("Vérification de l'existence de : %s%s%s\n", YELLOW, filename, RESET);
+    printf("Résultat : %s%s%s\n", RED, TO_BOOL(file_exists(filename)), RESET);
+
+    const char* cp_file = ".tmp/Burger.txt";
+    printf("Copiage de %s vers %s\n", filename, cp_file);
+    cp(cp_file, filename);
+
+    printf("Création du chemin du dossier de l'instantané de %s\n", filename);
+    printf("Résultat : %s%s%s\n", GREEN, hashToPath(hash), RESET);
+
+    printf("Création de l'instantatané de %s%s%s\n", GREEN, filename, RESET);
+    blobFile(filename);
+}
