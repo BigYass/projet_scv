@@ -19,7 +19,7 @@
  */
 #define DEBUG 2
 
-#define TMP_DIRECTORY ".tmp"
+#define TMP_DIRECTORY ".tmp/"
 
 // Réinitialise les formats et la couleur du texte
 #define RESET   "\033[0m"

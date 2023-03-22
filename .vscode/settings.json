@@ -15,7 +15,9 @@
     "cerrno": "c",
     "cstring": "c",
     "__config": "c",
-    "*.def": "c"
+    "*.def": "c",
+    "__functional_03": "c",
+    "functional": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

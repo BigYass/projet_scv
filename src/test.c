@@ -37,6 +37,7 @@ void test_list(){
 
 void test_files(){
     // TEST FICHIER ET DOSSIER
+    
     static const char* filename = "Makefile";
     const char* hash = sha256file(filename);
     List *l2 = stol("Amethyste|Diamant|Emeraude|Rubis|Saphir");

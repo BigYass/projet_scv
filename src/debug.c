@@ -14,23 +14,23 @@ void __err_logf(const char* __file, const int __line, const char* __function, er
       case E_OK:
         #if DEBUG > 2
         puts("[DEBUG] ");
+        printf("Dans la fonction %s (%s:%d) : ", __function, __file, __line);
         vprintf(format, args);
-        printf(" (%s:%d:%s)\n", __file, __line, __function);
         #endif
         break;
       case E_WARN:
         #if DEBUG > 1
         puts(YELLOW"[WARNING] "RESET);
+        printf("Dans la fonction %s (%s:%d) : ", __function, __file, __line);
         vprintf(format, args);
-        printf(" (%s:%d:%s)\n", __file, __line, __function);
         #endif
         break;
 
       case E_ERR:
         #if DEBUG > 0
-        fputs(RED"[ERREUR]"RESET, stderr);
+        fputs(RED"[ERREUR] "RESET, stderr);
+        fprintf(stderr, "Dans la fonction %s (%s:%d) : ", __function, __file, __line);
         vfprintf(stderr, format, args);
-        fprintf(stderr, "(%s:%d:%s)\n", __file, __line, __function);
         #endif
         break;
     }

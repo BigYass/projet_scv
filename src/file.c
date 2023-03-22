@@ -103,7 +103,12 @@ void cp(const char *to, const char *from)
 {
     //On crée les dossiers parents du fichier tels que "dos/sous-dos/fichier.txt" crée le dossier dos puis sous-dos
     char *cursor = strdup(to);
-    char *token = strtok(cursor, "|");
+    char *file = strrchr(cursor, '/');
+
+    if(file) file[0] = '\0'; // Séparation du nom du fichier des dossiers parents
+
+    char *token = strtok(cursor, "/");
+
 
     char current_dir[MAX_BUF_SIZE] = ".";
     while(token != NULL){
@@ -111,18 +116,14 @@ void cp(const char *to, const char *from)
         strcat(current_dir, token);
 
         struct stat sb;
-    if (stat(current_dir, &sb) == 0) { // le dossier existe déjà
-        err_logf(E_WARN, "Erreur: le nom '%s' est déjà pris par un fichier ou un dossier. Code : %d", current_dir, errno);
-        free(token);
-        return;
-    
-    } else { // le dossier n'existe pas
-        if (mkdir(current_dir, 0700) != 0) { // créer le dossier avec les droits maximums
-            err_logf(E_ERR, "Impossible de créer le dossier '%s'", current_dir);
+        if (stat(current_dir, &sb) == 0) { // Un dossier ou un fichier du meme nom existe
+            err_logf(E_WARN, "Le nom '%s' est déjà pris par un fichier ou un dossier. Code : %d\n", current_dir, errno);
+        
+        } else if (mkdir(current_dir, 0700) != 0) { // créer le dossier avec les droits maximums
+            err_logf(E_ERR, "Impossible de créer le dossier '%s'\n", current_dir);
             free(token);
             return;
         }
-    }
 
     token = strtok(NULL, "/");
     }
