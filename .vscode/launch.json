@@ -107,8 +107,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/media/bigyass/DUR1/FAC/L2-S2/Structure de données (C)/projet_scv",
-      "program": "/media/bigyass/DUR1/FAC/L2-S2/Structure de données (C)/projet_scv/build/Debug/outDebug",
+      "cwd": "/media/bigyass/DUR/FAC/L2-S2/Structure de données (C)/projet_scv",
+      "program": "/media/bigyass/DUR/FAC/L2-S2/Structure de données (C)/projet_scv/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
