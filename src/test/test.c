@@ -1,9 +1,10 @@
 #include <stdio.h>
 
-#include "const.h"
-#include "hash.h"
-#include "liste.h"
-#include "file.h"
+#include "../const.h"
+#include "../util/hash.h"
+#include "../util/liste.h"
+#include "../util/file.h"
+#include "../org/workfile.h"
 #include "test.h"
 
 void test_hash(){
@@ -13,6 +14,9 @@ void test_hash(){
     printf("Hash de %s : ", filename);
     char *hash = sha256file(filename);
     printf("%s%s%s\n",GREEN, hash, RESET);
+
+
+    printf("=== FIN DU TEST DES FONCTIONS DE HACHAGE ===\n");
 }
 
 void test_list(){
@@ -33,6 +37,8 @@ void test_list(){
     puts("Reconversion de la chaine en liste...");
     List* l2 = stol(s);
     printf("Résultat : %s%s%s\n", GREEN, ltos(l2), RESET);
+
+    printf("=== FIN DU TEST DES LISTES ===\n");
 }
 
 void test_files(){
@@ -66,4 +72,43 @@ void test_files(){
 
     printf("Création de l'instantatané de %s%s%s\n", GREEN, filename, RESET);
     blobFile(filename);
+
+    printf("=== FIN DU TEST DES FICHIERS ===\n");
+}
+
+void test_work_file(){
+    static const char* filename = "Makefile";
+    printf("Autorisation de %s%s%s : %s%o%s\n", YELLOW, filename, RESET, RED, getChmod(filename), RESET);
+
+    printf("Création d'un workfile...\n");
+    WorkFile *wf = createWorkFile(filename);
+    char *s = wfts(wf);
+    printf("Conversion : %s%s%s\n\n", GREEN, s, RESET);
+
+    printf("Convertion en Workfile...\n");
+    WorkFile *wf_tmp = stwf(s);
+    printf("Conversion : %s%s%s\n\n", GREEN, wfts(wf_tmp), RESET);
+
+    printf("Cratioin d'un WorkTree...\n");
+    WorkTree *wt = initWorkTree();
+
+    printf("Ajout de WorkFiles dans le WorkTree...\n");
+    appendWorkTree(wt, wf->name, wf->hash, wf->mode);
+    appendWorkTree(wt, "__burger", "no", 0777);
+    appendWorkTree(wt, "__cheese", "yes", 0777);
+    appendWorkTree(wt, "__onions", "5f", 0777);
+    
+
+    printf("%s%s%s dans le WorkTree ? %s%s%s\n", YELLOW, wf->name, RESET, GREEN, TO_BOOL(inWorkTree(wt, wf->name)), RESET);
+
+    char *s2 = wtts(wt);
+    printf("Conversion :\n %s\n", s2);
+
+    printf("Conversion de la chaine en WorkTree...\n");
+
+    WorkTree *wt_tmp = stwt(s2);
+
+    printf("Résultat :\n%s\n", wtts(wt_tmp));
+
+    printf("=== FIN DU TEST DES WORKFILE ===\n");
 }

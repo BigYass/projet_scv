@@ -5,6 +5,13 @@
 
 #include "liste.h"
 
+/**
+ * @brief Crée un fichier
+ * 
+ * @param file Nom du fichier
+ */
+void createFile(const char* file);
+
 
 /**
  * @brief Stocke la liste en format "cell1|cell2|...|cellN" dans le fichier à la location path
@@ -48,13 +55,7 @@ bool file_exists(const char *file);
  */
 void cp(const char *to, const char *from);
 
-/**
- * @brief Crée le chemin du dossier de fichier pour crée son instatané
- * 
- * @param hash hash du fichier
- * @return char* Chemin du dossier
- */
-char* hashToPath(const char* hash);
+
 
 /**
  * @brief Fait un instantané du fichier

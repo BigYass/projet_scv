@@ -2,10 +2,10 @@
 #include <malloc.h>
 #include <string.h>
 
-#include "const.h"
+#include "../const.h"
+#include "../test/debug.h"
 #include "liste.h"
 #include "hash.h"
-#include "debug.h"
 
 
 
@@ -63,7 +63,7 @@ char* ctos(Cell* c){
         err_log(E_ERR, "Tentative de conversion d'une cellule null...");
         return "";
     }
-    return strdup(c->data);
+    return c->data;
 }
 
 char* ltos(List* L){
@@ -71,7 +71,7 @@ char* ltos(List* L){
     char *s = malloc(sizeof(char) * size);
     if(s == NULL || L == NULL || *L == NULL) {
         err_logf(E_ERR, "Erreur: s = \"%s\"\n\tL = 0x%x", s, L);
-        return NULL;
+        return "";
     }
 
     memset(s, 0, size);
@@ -108,6 +108,10 @@ Cell* listGet(List* L, int i){
         if (!cursor) return NULL;
         cursor = cursor->next;
     }
+
+    if(cursor == NULL)
+        err_logf(E_ERR, "Index out of range (%d)", i);
+
     return cursor;
 }
 

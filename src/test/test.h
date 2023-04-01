@@ -21,4 +21,10 @@ void test_list();
  */
 void test_files();
 
+/**
+ * @brief Teste le bon foncitonnement des workfiles (workfile.h)
+ * 
+ */
+void test_work_file();
+
 #endif

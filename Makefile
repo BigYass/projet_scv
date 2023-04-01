@@ -6,9 +6,9 @@ BIN = bin
 OBJ = obj
 TMP = .tmp
 
-SRCS = src/hash.c src/liste.c src/main.c src/file.c src/test.c src/debug.c
+SRCS = $(wildcard $(SRC)/**/*.c) $(wildcard $(SRC)/*.c) 
 OBJS = $(SRCS:$(SRC)/%.c=$(OBJ)/%.o)
-TARGET = main
+TARGET = myGit
 
 .PHONY: all clean
 
@@ -21,4 +21,4 @@ $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(BIN)/* $(OBJ)/*.o $(TMP)/*
+	rm -rf $(BIN)/* $(OBJ)/*.o $(TMP)/*

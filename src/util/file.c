@@ -8,12 +8,27 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "const.h"
+#include "../const.h"
 #include "hash.h"
 #include "liste.h"
 #include "file.h"
-#include "debug.h"
+#include "../test/debug.h"
 
+void createFile(const char *file)
+{
+    if(file_exists(file)){
+        err_logf(E_WARN, "Le fichier %s existe déjà", file);
+        return;
+    }
+    FILE *f = fopen(file, "w");
+
+    if (f == NULL){
+        err_logf(E_WARN, "Problème lors de la création de %s", file);
+        return;
+    }
+
+    fclose(f);
+}
 
 void ltof(List *L, const char *path)
 {
@@ -153,25 +168,7 @@ void cp(const char *to, const char *from)
     fclose(source);
 }
 
-char *hashToPath(const char *hash)
-{
-    char *path = malloc(sizeof(char) * 66);
 
-    if(path == NULL || hash == NULL){
-        err_log(E_ERR, "Erreur chaine de charactère null");
-        return NULL;
-    }
-
-    path[0] = hash[0];
-    path[1] = hash[1];
-    path[2] = '/';
-
-    strcpy(path + 3, hash + 2);
-
-    path[65] = '\0';
-
-    return path;
-}
 
 void blobFile(const char *file)
 {

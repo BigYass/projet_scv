@@ -17,7 +17,17 @@
     "__config": "c",
     "*.def": "c",
     "__functional_03": "c",
-    "functional": "c"
+    "functional": "c",
+    "workfile.h": "c",
+    "__locale": "c",
+    "__threading_support": "c",
+    "vector": "c",
+    "bitset": "c",
+    "atomic": "c",
+    "stdio.h": "c",
+    "commit.h": "c",
+    "sstream": "c",
+    "strstream": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
@@ -53,5 +63,12 @@
     "**/.vscode",
     "**/.vscode/**"
   ],
-  "C_Cpp_Runner.useAddressSanitizer": false
+  "C_Cpp_Runner.useAddressSanitizer": false,
+  "makefile.launchConfigurations": [
+    {
+      "cwd": "/media/bigyass/DUR/FAC/L2-S2/Structure de données (C)/projet_scv/bin",
+      "binaryPath": "/media/bigyass/DUR/FAC/L2-S2/Structure de données (C)/projet_scv/bin/main",
+      "binaryArgs": []
+    }
+  ]
 }

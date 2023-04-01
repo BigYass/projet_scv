@@ -1,6 +1,8 @@
 #ifndef WORKFILE
 #define WORKFILE
 
+#define WORKTREE_SIZE 0x100
+
 typedef struct {
   char *name;
   char *hash;
@@ -39,8 +41,21 @@ void setMode (int mode , char * path);
  * @param name Nom du fichier
  * @return * WorkFile* Le workfile en question
  */
-WorkFile* createWorkFile(char* name);
+WorkFile* createWorkFile(const char* name);
 
+/**
+ * @brief Libère un workfile
+ * 
+ * @param wf Le workfile à libéré
+ */
+void freeWorkFile(WorkFile *wf);
+
+/**
+ * @brief Libère un worktree
+ * 
+ * @param wt Le worktree à libéré
+ */
+void freeWorkTree(WorkTree *wt);
 /**
  * @brief Convertit un WorkFile en chaine de charactère
  * 
@@ -55,7 +70,7 @@ char* wfts(WorkFile* wf);
  * @param ch La chaine de charactère
  * @return WorkFile* Le WorkFile initialisé
  */
-WorkFile* stwf(char* ch);
+WorkFile* stwf(const char* ch);
 
 /**
  * @brief Initialise un workfile 
@@ -71,7 +86,7 @@ WorkTree* initWorkTree();
  * @param name Nom du fichier ou du répertoire
  * @return int Retourne la position du fichier. -1 si non trouvé...
  */
-int inWorkTree(WorkTree* wt, char* name);
+int inWorkTree(WorkTree* wt, const char* name);
 
 /**
  * @brief Rajoute un fichier au WorkTree SEULEMENT si il n'existe pas
@@ -82,7 +97,7 @@ int inWorkTree(WorkTree* wt, char* name);
  * @param mode Permission du fichier
  * @return int Renvoie le résultat de la fonction
  */
-int appendWorkTree(WorkTree* wt, char* name, char* hash, int mode);
+int appendWorkTree(WorkTree* wt, const char* name, const char* hash, int mode);
  
 /**
  * @brief Convertit un WorkTree en une chaine de charactère composée des représentation 
@@ -118,7 +133,7 @@ int wttf(WorkTree* wt, char* file);
  * @param file Chemin du fichier à lire
  * @return WorkTree* Le WorkTree correspondant si la conversion a réussie. NULL sinon...
  */
-WorkTree* ftwt(char* file);
+WorkTree* ftwt(const char* file);
 
 /**
  * @brief Fait un instantanné d'un WorkTree (le fichier ou répertoire) et renvoie son hash
