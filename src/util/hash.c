@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../const.h"
-#include "../test/debug.h"
-#include "hash.h"
+#include "../include/const.h"
+#include "../include/test/debug.h"
+#include "../include/util/hash.h"
 
 int hashFile (const char* source, const char* dest) {
 
@@ -52,7 +52,7 @@ char *hashToPath(const char *hash)
     return path;
 }
 
-static unsigned long
+unsigned long
 sdbm(unsigned char *str)
 {
     unsigned long hash = 0;
