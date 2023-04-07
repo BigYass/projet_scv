@@ -8,11 +8,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "../const.h"
-#include "hash.h"
-#include "liste.h"
-#include "file.h"
-#include "../test/debug.h"
+#include "../include/const.h"
+#include "../include/util/hash.h"
+#include "../include/util/liste.h"
+#include "../include/util/file.h"
+#include "../include/test/debug.h"
 
 void createFile(const char *file)
 {

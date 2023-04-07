@@ -2,10 +2,10 @@
 #include <malloc.h>
 #include <string.h>
 
-#include "../const.h"
-#include "../test/debug.h"
-#include "liste.h"
-#include "hash.h"
+#include "../include/const.h"
+#include "../include/test/debug.h"
+#include "../include/util/liste.h"
+#include "../include/util/hash.h"
 
 
 

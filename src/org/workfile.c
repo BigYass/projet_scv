@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "workfile.h"
-#include "../const.h"
-#include "../test/debug.h"
-#include "../util/hash.h"
-#include "../util/file.h"
+#include "../include/org/workfile.h"
+#include "../include/const.h"
+#include "../include/test/debug.h"
+#include "../include/util/hash.h"
+#include "../include/util/file.h"
 
 // TODO : O bordel
 

@@ -33,7 +33,7 @@ char* hashToPath(const char* hash);
  * @param str La chaine de charactère
  * @return unsigned long Le hash
  */
-static unsigned long
+unsigned long
 sdbm(unsigned char *str);
 
 #endif

@@ -2,13 +2,13 @@
 #include <stdbool.h>
 #include <malloc.h>
 
-#include "my_git.h"
-#include "workfile.h"
-#include "refs.h"
-#include "commit.h"
-#include "../const.h"
-#include "../util/file.h"
-#include "../test/debug.h"
+#include "../include/org/my_git.h"
+#include "../include/org/workfile.h"
+#include "../include/org/refs.h"
+#include "../include/org/commit.h"
+#include "../include/const.h"
+#include "../include/util/file.h"
+#include "../include/test/debug.h"
 
 void myGitAdd(const char *file)
 {

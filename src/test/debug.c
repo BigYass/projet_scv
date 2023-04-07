@@ -1,8 +1,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "debug.h"
-#include "../const.h"
+#include "../include/test/debug.h"
+#include "../include/const.h"
 
 void __err_logf(const char* __file, const int __line, const char* __function, error_type err_type, const char* format, ...)
 {

@@ -4,15 +4,15 @@
 #include <sys/stat.h>
 #include <ctype.h>
 
-#include "const.h"
+#include "include/const.h"
 
-#include "test/test.h"
+#include "include/test/test.h"
 
-#include "org/refs.h"
-#include "org/my_git.h"
-#include "org/workfile.h"
+#include "include/org/refs.h"
+#include "include/org/my_git.h"
+#include "include/org/workfile.h"
 
-#include "util/file.h"
+#include "include/util/file.h"
 
 
 void create_tmp_file(){

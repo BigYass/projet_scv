@@ -2,13 +2,13 @@
 #include <malloc.h>
 #include <string.h>
 
-#include "branch.h"
-#include "../const.h"
-#include "../org/refs.h"
-#include "../org/commit.h"
-#include "../test/debug.h"
-#include "../util/file.h"
-#include "../util/hash.h"
+#include "../include/org/branch.h"
+#include "../include/const.h"
+#include "../include/org/refs.h"
+#include "../include/org/commit.h"
+#include "../include/test/debug.h"
+#include "../include/util/file.h"
+#include "../include/util/hash.h"
 
 void initBranch()
 {

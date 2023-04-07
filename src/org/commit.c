@@ -2,19 +2,19 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "commit.h"
-#include "../const.h"
-#include "../util/hash.h"
-#include "../util/file.h"
-#include "../test/debug.h"
-#include "../org/workfile.h"
+#include "../include/org/commit.h"
+#include "../include/const.h"
+#include "../include/util/hash.h"
+#include "../include/util/file.h"
+#include "../include/test/debug.h"
+#include "../include/org/workfile.h"
 
-kvp *createKeyVal(char *key, char *val)
+kvp *createKeyVal(const char *key, const char *val)
 {
   kvp* k = malloc(sizeof(kvp));
 
-  k->key = key;
-  k->value = val;
+  k->key = (char *) key;
+  k->value = (char *) val;
 
   return k;
 }
@@ -43,7 +43,7 @@ char *kvts(kvp *k)
   return s;
 }
 
-kvp *stkv(char *str)
+kvp *stkv(const char *str)
 {
   char key[MAX_BUF_SIZE] = "\0", val[MAX_BUF_SIZE] = "\0";
   scanf("%s : %s", key, val);
@@ -62,7 +62,7 @@ Commit *initCommit()
   return commit;
 }
 
-void commitSet(Commit *c, char *key, char *value)
+void commitSet(Commit *c, const char *key, const char *value)
 {
   if(c->n >= c->size){
     err_log(E_ERR, "Tentative d'insertion d'une clé dans un commit plein...");
@@ -78,14 +78,14 @@ void commitSet(Commit *c, char *key, char *value)
   c->n++;
 }
 
-Commit *createCommit(char *hash)
+Commit *createCommit(const char *hash)
 {
   Commit *c = initCommit();
   commitSet(c, "tree", hash);
   return c;
 }
 
-char *commitGet(Commit *c, char *key)
+char *commitGet(Commit *c, const char *key)
 {
   int hash = sdbm((unsigned char*)key) % c->size;
   
@@ -144,7 +144,7 @@ void ctf(Commit *c, const char *file)
   fclose(f);
 }
 
-Commit *ftc(char *file)
+Commit *ftc(const char *file)
 {
   FILE *f = fopen(file, "r");
 
@@ -187,7 +187,7 @@ char *blobCommit(Commit *c)
   return hash;
 }
 
-void restoreCommit(char *hash)
+void restoreCommit(const char *hash)
 {
   char *path = hashToPath(hash);
   Commit *c = ftc(path);

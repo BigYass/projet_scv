@@ -1,11 +1,11 @@
 #include <stdio.h>
 
-#include "../const.h"
-#include "../util/hash.h"
-#include "../util/liste.h"
-#include "../util/file.h"
-#include "../org/workfile.h"
-#include "test.h"
+#include "../include/const.h"
+#include "../include/util/hash.h"
+#include "../include/util/liste.h"
+#include "../include/util/file.h"
+#include "../include/org/workfile.h"
+#include "../include/test/test.h"
 
 void test_hash(){
   // TEST HACHAGE

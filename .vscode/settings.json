@@ -27,7 +27,9 @@
     "stdio.h": "c",
     "commit.h": "c",
     "sstream": "c",
-    "strstream": "c"
+    "strstream": "c",
+    "refs.h": "c",
+    "my_git.h": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

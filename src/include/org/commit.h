@@ -23,7 +23,7 @@ typedef HashTable Commit;
  * @param val Valeur de l'élement
  * @return kvp* La paire alloué
  */
-kvp* createKeyVal(char* key, char* val);
+kvp* createKeyVal(const char* key, const char* val);
 
 /**
  * @brief Libère une paire de clé et d'une valeur
@@ -54,7 +54,7 @@ char* kvts(kvp* k);
  * @param str La chaine à convertir
  * @return kvp* La paire nouvellement alloué
  */
-kvp* stkv(char* str);
+kvp* stkv(const char* str);
 
 /**
  * @brief Alloue et initialise un Commit de taille fix
@@ -70,7 +70,7 @@ Commit* initCommit();
  * @param key Clé
  * @param value Valeur
  */
-void commitSet(Commit* c, char* key, char* value);
+void commitSet(Commit* c, const char* key, const char* value);
 
 /**
  * @brief Alloue et initialise un Commit puis y a ajoute l'élément obligatoire de clé "tree"
@@ -78,7 +78,7 @@ void commitSet(Commit* c, char* key, char* value);
  * @param hash Valeur de "tree"
  * @return Commit* Commit nouvellement alloué
  */
-Commit* createCommit(char* hash);
+Commit* createCommit(const char* hash);
 
 /**
  * @brief Cherche dans la table un élément dont la clé est key
@@ -87,7 +87,7 @@ Commit* createCommit(char* hash);
  * @param key La clé à recherché
  * @return char* Valeur de la clé si trouvé, NULL sinon
  */
-char* commitGet(Commit* c, char* key);
+char* commitGet(Commit* c, const char* key);
 
 /**
  * @brief Convertit un commit en une chaine de charactère
@@ -119,7 +119,7 @@ void ctf(Commit* c, const char* file);
  * @param file Le nom du fichier
  * @return Commit* Résultat
  */
-Commit* ftc(char* file);
+Commit* ftc(const char* file);
 
 /**
  * @brief Crée un instantanné d'un commit
@@ -134,6 +134,6 @@ char* blobCommit(Commit* c);
  * 
  * @param hash Hash du commit
  */
-void restoreCommit(char *hash);
+void restoreCommit(const char *hash);
 
 #endif

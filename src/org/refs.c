@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-#include "../const.h"
-#include "../test/debug.h"
-#include "../util/file.h"
-#include "refs.h"
+#include "../include/const.h"
+#include "../include/test/debug.h"
+#include "../include/util/file.h"
+#include "../include/org/refs.h"
 
 void initRefs()
 {
