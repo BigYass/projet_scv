@@ -136,4 +136,11 @@ char* blobCommit(Commit* c);
  */
 void restoreCommit(const char *hash);
 
+/**
+ * @brief Change de branche avec un pattern
+ * 
+ * @param pattern Le paterne
+ */
+void myGitCheckoutCommit(const char* pattern);
+
 #endif

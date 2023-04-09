@@ -21,11 +21,4 @@ $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BIN)/* $(TMP)/* $(OBJS)
-
-
-run:
-	make -s clean 
-	make -s
-	./$(BIN)/$(TARGET)
-	make -s clean
+	rm -rf $(BIN)/* $(OBJ)/*.o $(TMP)/*

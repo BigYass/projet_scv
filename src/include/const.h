@@ -19,7 +19,7 @@
  */
 #define DEBUG 2
 
-#define TMP_DIRECTORY ".tmp/"
+#define TMP_DIRECTORY ".tmp"
 
 // Réinitialise les formats et la couleur du texte
 #define RESET   "\033[0m"
@@ -40,6 +40,9 @@
 #define CYAN    "\033[36m"
 //Mets le texte en blanc
 #define WHITE   "\033[37m"
+//Mets le texte en blanc
+#define GRAY   "\033[38m"
+
 
 //Mets le fond en noir
 #define BGBLACK   "\033[40m"

@@ -16,11 +16,9 @@ int hashFile (const char* source, const char* dest) {
 }
 
 char* sha256file(const char* file){
-    static char template [] = "/tmp/myfileXXXXXX";
     char fname[MAX_BUF_SIZE] = "\0";
-    sprintf(fname,  "%s_%s_hash.tmp", template, file);
+    sprintf(fname,  "%s%s%s.hash", TMP_DIRECTORY, file[0] == '/' ? "" : "/", file);
 
-    mkstemp(fname);
 
     hashFile(file, fname);
 

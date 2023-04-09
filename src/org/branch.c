@@ -6,6 +6,7 @@
 #include "../include/const.h"
 #include "../include/org/refs.h"
 #include "../include/org/commit.h"
+#include "../include/org/workfile.h"
 #include "../include/test/debug.h"
 #include "../include/util/file.h"
 #include "../include/util/hash.h"
@@ -25,7 +26,7 @@ void initBranch()
 
 int branchExists(const char *branch)
 {
-  List *refs = listdir(".refs");
+  List *refs = listdir(".refs/");
   int result = searchList(refs, branch) != NULL;
   freeList(refs);
   return result;
@@ -33,7 +34,17 @@ int branchExists(const char *branch)
 
 void createBranch(const char *branch)
 {
+  if(branch == NULL){
+    return;
+  }
+
   char *hash = getRef("HEAD");
+
+  if(hash == NULL){
+    err_log(E_ERR, "Chaine de charactère NULL...");
+    return;
+  }
+
   createUpdateRef(branch, hash);
   free(hash);
 }
@@ -131,4 +142,22 @@ List *getAllCommits()
   freeList(content);
 
   return L;
+}
+void myGitCheckoutBranch(const char *branch)
+{
+  FILE *f = fopen(".current_branch", "w");
+  fprintf(f, "%s", branch);
+  fclose(f);
+
+  char* hash_commit = getRef(branch);
+
+  if(hash_commit == NULL){
+    err_logf(E_ERR, "Le hash de %s a retourné null...", branch);
+    return;
+  }
+
+  createUpdateRef("HEAD", hash_commit);
+  restoreCommit(hash_commit);
+
+  free(hash_commit);
 }

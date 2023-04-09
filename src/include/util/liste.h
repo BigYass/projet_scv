@@ -82,4 +82,21 @@ Cell* searchList(List* L, const char* str);
  */
 List* stol(const char* s);
 
+/**
+ * @brief Filtre une liste pour les éléments commencant par paterne.
+ * 
+ * @param L La liste à filtré
+ * @param pattern Le paterne
+ * @return List* La liste filtré
+ */
+List *filterList(List *L, const char* pattern);
+
+/**
+ * @brief Retourne la taille d'une liste
+ * 
+ * @param L Liste
+ * @return int Taille de la liste
+ */
+int sizeList(List *L);
+
 #endif

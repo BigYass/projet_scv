@@ -8,6 +8,9 @@
 #include "../include/util/file.h"
 #include "../include/test/debug.h"
 #include "../include/org/workfile.h"
+#include "../include/org/refs.h"
+#include "../include/org/branch.h"
+
 
 kvp *createKeyVal(const char *key, const char *val)
 {
@@ -46,7 +49,7 @@ char *kvts(kvp *k)
 kvp *stkv(const char *str)
 {
   char key[MAX_BUF_SIZE] = "\0", val[MAX_BUF_SIZE] = "\0";
-  scanf("%s : %s", key, val);
+  sscanf(str, "%s : %s", key, val);
 
   return createKeyVal(key, val);
 }
@@ -173,7 +176,7 @@ Commit *ftc(const char *file)
 
 char *blobCommit(Commit *c)
 {
-  char fname[MAX_BUF_SIZE] = "/tmp/myWorkTreeXXXXXX";
+  char fname[MAX_BUF_SIZE] = ".tmp/myWorkTreeXXXXXX";
   mkstemp(fname);
 
   ctf(c, fname);
@@ -200,4 +203,28 @@ void restoreCommit(const char *hash)
   free(tree_hash);
   freeCommit(c);
   
+}
+
+void myGitCheckoutCommit(const char* pattern)
+{
+  List *L = getAllCommits();
+  List *filtered_list = filterList(L, pattern);
+
+  int len = sizeList(filtered_list);
+  if (len == 1){
+    char *commit_hash = (*L)->data;;
+    createUpdateRef("HEAD", commit_hash);
+    restoreCommit(commit_hash);
+  }
+  else if (len == 0){
+    printf("Aucun hash ne commence par "YELLOW"%s"RESET"...\n", pattern);
+  }
+  else {
+    printf("Plusieurs hash commencent par "YELLOW"%s"RESET" :\n", pattern);
+    for(Cell *c = *filtered_list; c; c = c->next)
+      printf(" -> %s\n", c->data);
+  }
+
+  freeList(L);
+  freeList(filtered_list);
 }

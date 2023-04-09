@@ -120,7 +120,7 @@ Cell* searchList(List* L, const char* str){
         err_logf(E_WARN, "Erreur: Paramètre nul (s = \"%s\", L = 0x%x)", str, L);
         return NULL;
     }
-    List cursor = (*L)->next;
+    List cursor = *L;
     while(cursor){
         if(strcmp(cursor->data,str)==0)return cursor;
         cursor=cursor->next;
@@ -138,5 +138,29 @@ List* stol(const char* s){
     while((token = strtok(NULL, "|")) != NULL);
 
     free(s_buf);
+
     return l;
+}
+
+List *filterList(List * L, const char *pattern)
+{
+    List *filtered = initList();
+
+    int len = strlen(pattern);
+    for(Cell *cursor = *L; cursor != NULL; cursor = cursor->next){
+        if(strncmp(cursor->data, pattern, len)){
+            insertFirst(filtered, cursor);
+        }
+    }
+
+    return filtered;
+}
+
+int sizeList(List *L){
+    int len = 0;
+
+    for(Cell *cursor = *L; cursor != NULL; cursor = cursor->next) 
+        len++;
+
+    return len;
 }

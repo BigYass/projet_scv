@@ -53,5 +53,11 @@ List *branchList(const char *branch);
  */
 List *getAllCommits();
 
+/**
+ * @brief Change de branche
+ * 
+ * @param branch 
+ */
+void myGitCheckoutBranch(const char* branch);
 
 #endif

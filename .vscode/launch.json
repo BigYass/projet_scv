@@ -5,8 +5,11 @@
       "name": "(gdb) Lancer",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/main",
-      "args": [],
+      "program": "${workspaceFolder}/bin/myGit",
+      "args": [
+        "commit",
+        "test"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
@@ -85,7 +88,7 @@
       "name": "(gdb) Joindre",
       "type": "cppdbg",
       "request": "attach",
-      "program": "${workspaceFolder}/bin/main",
+      "program": "${workspaceFolder}/bin/myGit",
       "MIMode": "gdb",
       "setupCommands": [
         {

@@ -3,6 +3,8 @@
 
 #define WORKTREE_SIZE 0x100
 
+#include "../util/liste.h"
+
 typedef struct {
   char *name;
   char *hash;
@@ -125,7 +127,7 @@ WorkTree* stwt(char *s);
  * @param file Le chemin du fichier où stocké le WorkTree
  * @return int Résultat de la fonciton
  */
-int wttf(WorkTree* wt, char* file);
+int wttf(WorkTree* wt, const char* file);
 
 /**
  * @brief Lit le fichier 'file' et tente de le convertir en WorkTree
@@ -159,5 +161,15 @@ char* saveWorkTree(WorkTree* wt, char* path);
  * @param path Le chemin du fichier
  */
 void restoreWorkTree(WorkTree* wt, char* path);
+
+/**
+ * @brief Fusionne de WorkTrees dans un troisième
+ * 
+ * @param wt1 Premier WorkTree
+ * @param wt2 Deuxième WorkTree
+ * @param conflicts Une liste contenant les éléments à conflit
+ * @return WorkTree* La fusion
+ */
+WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts);
 
 #endif

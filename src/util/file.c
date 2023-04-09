@@ -88,12 +88,11 @@ List *listdir(const char *root_dir)
     if (dp != NULL)
     {
         l = initList();
-        ep = readdir(dp);
-        while (ep != NULL)
+        while ((ep = readdir(dp)) != NULL)
         {
             insertFirst(l, buildCell(ep->d_name));
-            ep = readdir(dp);
         }
+        closedir(dp);
     }
     else
     {
@@ -105,13 +104,8 @@ List *listdir(const char *root_dir)
 
 bool file_exists(const char *file)
 {
-    List *l = listdir("."); // Dossier courant = "."
-    Cell *c = searchList(l, file);
-
-    bool result = c != NULL;
-
-    freeList(l);
-    return result;
+    struct stat buf;
+    return (stat(file, &buf) == 0);
 }
 
 void cp(const char *to, const char *from)
@@ -136,7 +130,7 @@ void cp(const char *to, const char *from)
         
         } else if (mkdir(current_dir, 0700) != 0) { // créer le dossier avec les droits maximums
             err_logf(E_ERR, "Impossible de créer le dossier '%s'\n", current_dir);
-            free(token);
+            free(cursor);
             return;
         }
 
@@ -190,8 +184,8 @@ void blobFile(const char *file)
     }
 
     strcat(path, TMP_DIRECTORY);
+    strcat(path, "/");
     strcat(path, hash_path);
-    strcat(path, file);
 
     cp(path, file);
 

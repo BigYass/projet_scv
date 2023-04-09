@@ -23,7 +23,13 @@ void initRefs()
 
 void createUpdateRef(const char *ref_name, const char *hash)
 {
-  char *path = ".refs/";
+  char path[MAX_BUF_SIZE] = ".refs/";
+
+  if(ref_name == NULL){
+    err_log(E_ERR, "Chaine de charactère null...");
+    return;
+  }
+
   strcat(path, ref_name);
   FILE *f = fopen(path, "w");
 
@@ -58,6 +64,8 @@ char *getRef(const char *ref_name)
   }
 
   char *s = malloc(sizeof(char) * MAX_BUF_SIZE);
+  memset(s, 0, MAX_BUF_SIZE);
+
   fgets(s, MAX_BUF_SIZE, f);
   fclose(f);
   return s;

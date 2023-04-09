@@ -18,7 +18,7 @@ void myGitAdd(const char *file)
     wt = initWorkTree();
   }
   else {
-    wt = ftwt(file);
+    wt = ftwt(".add");
   }
 
   if(file_exists(file)){

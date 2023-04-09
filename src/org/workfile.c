@@ -36,6 +36,8 @@ WorkFile *createWorkFile(const char *name)
 {
   WorkFile *wf = malloc(sizeof(WorkFile));
 
+  memset(wf, 0, sizeof(WorkFile));
+
   wf->name = strdup(name);
   wf->hash = NULL;
   wf->mode = 0;
@@ -175,7 +177,7 @@ WorkTree *stwt(char *s)
 
 // ==== MANIPULATION DE FICHIER ====
 
-int wttf(WorkTree *wt, char *file)
+int wttf(WorkTree *wt, const char *file)
 {
   FILE *f = fopen(file, "w");
   if (f == NULL)
@@ -223,7 +225,7 @@ WorkTree *ftwt(const char *file)
 
 char *blobWorkTree(WorkTree *wt)
 {
-  char fname[MAX_BUF_SIZE] = "/tmp/myWorkTreeXXXXXX";
+  char fname[MAX_BUF_SIZE] = ".tmp/myWorkTreeXXXXXX";
   mkstemp(fname);
 
   int err = 0;
@@ -248,6 +250,9 @@ char *saveWorkTree(WorkTree *wt, char *path)
   for (int i = 0; i < wt->n; i++)
   {
     char *full_path = malloc(sizeof(char) * (strlen(path) + strlen(wt->tab[i].name) + 2));
+
+    memset(full_path, 0, sizeof(char) * (strlen(path) + strlen(wt->tab[i].name) + 2));
+
     strcat(full_path, path);
     strcat(full_path, "/");
     strcat(full_path, wt->tab[i].name);
@@ -315,4 +320,29 @@ void restoreWorkTree(WorkTree *wt, char *path)
     free(full_path);
     free(copyPath);
   }
+}
+
+WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts){
+  WorkTree *wt = initWorkTree();
+
+  // Recherche des conflits
+  if(wt1) for(int i = 0; i < wt1->n; i++)
+    for(int j = 0; j < wt2->n; j++)
+      if(!strcmp(wt1->tab[i].name, wt2->tab[i].name))
+        insertFirst(*conflicts, buildCell(wt1->tab[i].name));
+  
+
+  // On rajoute les éléments de wt1
+  if(wt1)
+    for(int i = 0; i < wt1->n; i++)
+      if(searchList(*conflicts, wt1->tab[i].name))
+        appendWorkTree(wt, wt1->tab[i].name, wt1->tab[i].hash, wt1->tab[i].mode);
+
+  // On rajoute les éléments de wt2
+  if(wt2)
+    for(int i = 0; i < wt2->n; i++)
+      if(searchList(*conflicts, wt2->tab[i].name))
+        appendWorkTree(wt, wt2->tab[i].name, wt2->tab[i].hash, wt2->tab[i].mode);
+
+  return wt;
 }
