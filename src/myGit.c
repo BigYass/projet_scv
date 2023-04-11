@@ -32,14 +32,14 @@ int main(int argc, char *argv[])
 
     if(argc == 1){
         printf("Utilisation : \n");
-        printf(YELLOW "%s init :"RESET" initialise le repertoire de references.\n", argv[0]);
-        printf(YELLOW "%s list-refs :"RESET" affiche toutes les references existantes.\n", argv[0]);
-        printf(YELLOW "%s create-ref <name> <hash> :"RESET" cree la reference <name> qui pointe vers le commit correspondant au hash donne.\n", argv[0]);
-        printf(YELLOW "%s delete-ref <name> :"RESET" supprime la reference name.\n", argv[0]);
-        printf(YELLOW "%s add <elem> [<elem2> <elem3> ...] :"RESET" ajoute un ou plusieurs fichiers/repertoires la la zone de preparation (pour faire partie du prochain commit).\n", argv[0]);
-        printf(YELLOW "%s list-add :"RESET" affiche le contenu de la zone de preparation.\n", argv[0]);
-        printf(YELLOW "%s clear-add :"RESET" vide la zone de preparation.\n", argv[0]);
-        printf(YELLOW "%s commit <branch-name> [-m <message>] :"RESET" effectue un commit sur une branche, avec ou sans message descriptif.\n", argv[0]);
+        printf(YELLOW "%s init :"RESET" Initialise le repertoire de references.\n", argv[0]);
+        printf(YELLOW "%s list-refs :"RESET" Affiche toutes les references existantes.\n", argv[0]);
+        printf(YELLOW "%s create-ref <name> <hash> :"RESET" Cree la reference <name> qui pointe vers le commit correspondant au hash donne.\n", argv[0]);
+        printf(YELLOW "%s delete-ref <name> :"RESET" Supprime la reference name.\n", argv[0]);
+        printf(YELLOW "%s add <elem> [<elem2> <elem3> ...] :"RESET" Ajoute un ou plusieurs fichiers/repertoires a la zone de preparation (pour faire partie du prochain commit).\n", argv[0]);
+        printf(YELLOW "%s list-add :"RESET" Affiche le contenu de la zone de preparation.\n", argv[0]);
+        printf(YELLOW "%s clear-add :"RESET" Vide la zone de preparation.\n", argv[0]);
+        printf(YELLOW "%s commit <branch-name> [-m <message>] :"RESET" Effectue un commit sur une branche, avec ou sans message descriptif.\n", argv[0]);
         printf(YELLOW "%s get-current-branch :"RESET" Affiche le nom de la branche courrante\n", argv[0]);
         printf(YELLOW "%s branch <branch-name>:"RESET" Crée la branche de nom <branch-name>\n", argv[0]);
         printf(YELLOW "%s branch-print <branch-name>:"RESET" Affiche le hash de tous les commits de la branche\n", argv[0]);
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
         }
         else {
             myGitCheckoutBranch(argv[2]);
-            printf("Déplacement de branche vers " YELLOW "%s" RESET, argv[2]);
+            printf("Réstauration de la branche " YELLOW "%s" RESET "\n", argv[2]);
         }
     }
     else if(!strcmp(argv[1], "checkout-commit")){
@@ -199,7 +199,129 @@ int main(int argc, char *argv[])
             printf("Déplacement de commit vers " YELLOW "%s" RESET "\n", argv[2]);
         }
     }
-    
+    else if(!strcmp(argv[1], "test")){
+        if(argc < 3){
+            printf(RED "Erreur de syntax, " RESET "Utilisation : %s merge <branch> [message]\n", argv[0]);
+        }
+        else {
+            char *current_branch = getCurrentBranch();
+
+            size_t size = sizeof(char) * MAX_BUF_SIZE;
+            char *msg = malloc(size);
+            memset(msg, 0, size);
+
+            char delim[2] = "\0";
+
+            for(int i = 2; ++i < argc;*delim = ' '){
+                if(size >= strlen(msg) + strlen(argv[i])){
+                    size <<= 2; msg = realloc(msg, size); // => size *= 2
+                }
+                strcat(msg, argv[i]);
+                strcat(msg, delim);
+            }
+
+            List *conflitcs = merge(argv[2], strlen(msg) ? msg : NULL);
+
+            if(conflitcs == NULL){
+                printf("Fusion de la branche %s et %s accompli!", current_branch, argv[2]);
+            }
+            else {
+                printf(RED "Impossible de fusionner, conflit :\n" RESET);
+                printf(YELLOW "1." RESET " Garder les fichier de la branche courrante (%s)\n", current_branch);
+                printf(YELLOW "2." RESET " Garder les fichier de l'autre branche (%s)\n", argv[2]);
+                printf(YELLOW "3." RESET " Choisir manuellement les fichiers à garder (%d fichiers)\n", sizeList(conflitcs));
+                printf(YELLOW "4." RESET " Annuler\n");
+                printf("Votre choix : " YELLOW);
+
+                int choice = -1;
+                do {
+                    scanf("%d", &choice);
+                    printf(RESET);
+                    if(choice < 1 || choice > 4){
+                        printf("Veuillez entrez un nombre entre 1 et 4 : " YELLOW);
+                        fflush(stdin);
+                    }
+                }while(choice < 1 || choice > 4);
+                
+                List *new_conflitcts = NULL;
+
+                switch (choice)
+                {
+                
+                case 1:
+                    createDeletionCommit(argv[2], conflitcs, msg);
+                    new_conflitcts = merge(current_branch, argv[2]);
+                    printf("Vous avez choisis de garder les fichier de la branche courrante (%s). ", current_branch);
+
+                    if(new_conflitcts == NULL){
+                        printf("Les branches ont été correctement fusionné!\n");
+                    }
+                    else {
+                        err_logf(E_ERR, "La branche %s et %s connaisse encore des conflits après la supression de celle ci\n", current_branch, argv[2]);
+                    }
+
+                    break;
+
+                case 2:
+                    createDeletionCommit(current_branch, conflitcs, msg);
+                    new_conflitcts = merge(current_branch, argv[2]);
+                    printf("Vous avez choisis de garder les fichier l'autre branche (%s). ", argv[2]);
+
+                    if(new_conflitcts == NULL){
+                        printf("Fin des conflits!\nLes branches ont été correctement fusionné!\n");
+                    }
+                    else {
+                        err_logf(E_ERR, "La branche %s et %s connaisse encore des conflits après la supression de celle ci\n", current_branch, argv[2]);
+                    }
+
+                    break;
+
+                case 3:
+                {
+                    List* remote_suppr = initList();
+                    List* current_suppr = initList();
+
+                    for(Cell *file = *conflitcs; file != NULL; file = file->next){
+                        // INPUT
+                        choice = -1;
+                        printf("Pour le fichier %s, de quel branche garde-t-on le fichier ?\n1. %s\n2. %s\nVotre choix : ", file->data, current_branch, argv[2]);                        
+                        do {
+                            scanf("%d", &choice);
+                            if(choice < 1 || choice > 2){
+                                printf("Choix invalide, votre choix : ");
+                                fflush(stdin);
+                            }
+                        }while(choice < 1 || choice > 2);
+
+                        insertFirst((choice == 1 ? remote_suppr : current_suppr), buildCell(file->data));
+                    }
+
+                    createDeletionCommit(current_branch, current_suppr, msg);
+                    createDeletionCommit(argv[2], remote_suppr, msg);
+                    List *new_conflitcts = merge(current_branch, msg);
+
+                    if(new_conflitcts == NULL){
+                        printf("Fin des conflits!\nLes branches ont été correctement fusionné!\n");
+                    }
+                    else {
+                        err_logf(E_ERR, "La branche %s et %s connaisse encore des conflits après la supression de celle ci", current_branch, argv[2]);
+                    }
+
+                    break;
+                }
+
+                case 4:
+                    printf("Fusion anullé...\n");
+                    break;
+                
+                default:
+                    printf("Choix inconnue, annulation...\n");
+                    break;
+                }
+
+            }
+        }
+    }
     else if(!strcmp(argv[1], "test")){
         //TODO : Rajouter les fonctions de tests
     }

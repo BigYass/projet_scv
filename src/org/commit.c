@@ -233,7 +233,7 @@ char* commitPath(const char* hash){
 
 char *blobCommit(Commit *c)
 {
-  char fname[MAX_BUF_SIZE] = "myWorkTreeXXXXXX";
+  char fname[MAX_BUF_SIZE] = "myCommitXXXXXX";
   mkstemp(fname);
 
   ctf(c, fname);
@@ -268,7 +268,7 @@ void restoreCommit(const char *hash)
 
   char *tree_hash = workTreePath(wt_hash);
 
-  if(wt_hash == NULL){
+  if(tree_hash == NULL){
     err_logf(E_ERR, "Impossible de convertir" YELLOW "%s" RESET " en chemin d'accès...", wt_hash);
     return;
   }

@@ -8,6 +8,13 @@
 #include "../include/test/debug.h"
 #include "../include/util/hash.h"
 #include "../include/util/file.h"
+#include "../include/org/commit.h"
+#include "../include/org/branch.h"
+#include "../include/org/refs.h"
+#include "../include/org/my_git.h"
+
+
+
 
 // TODO : O bordel
 
@@ -383,3 +390,117 @@ WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts){
 
   return wt;
 }
+
+List* merge(const char* remote_branch, const char* message){
+  char *current_branch = getRef(getCurrentBranch());
+
+  char *current_commit_path = commitPath(current_branch);
+  if(current_commit_path == NULL){
+    err_logf(E_ERR, "Impossible de trouver le chemin du fichier correspondant à la branche %s..", current_branch);
+  }
+  
+  char *remote_commit_path = commitPath(remote_branch);
+  if(current_commit_path == NULL){
+    err_logf(E_ERR, "Impossible de trouver le chemin du fichier correspondant à la branche %s..", remote_branch);
+  }
+
+  Commit *current_commit = ftc(current_commit_path);
+  if(current_commit == NULL){
+    err_logf(E_ERR, "Conversion vers commit du fichier %s impossible..", current_commit_path);
+  }
+
+  Commit *remote_commit = ftc(remote_commit_path);
+  if(current_commit == NULL){
+    err_logf(E_ERR, "Conversion vers commit du fichier %s impossible..", remote_commit_path);
+  }
+
+  char *current_wt_hash = commitGet(current_commit, "tree");
+  if(current_wt_hash == NULL){
+    err_logf(E_ERR, "Impossible de trouver tree dans le commit %s", current_commit_path);
+  }
+
+  char *remote_wt_hash = commitGet(remote_commit, "tree");
+  if(remote_wt_hash == NULL){
+    err_logf(E_ERR, "Impossible de trouver tree dans le commit %s", remote_commit_path);
+  }
+
+  WorkTree *current_wt = ftwt(workTreePath(current_wt_hash));
+  if(current_wt == NULL){
+    err_logf(E_ERR, "Conversion du worktree %s", current_wt);
+  }
+
+  WorkTree *remote_wt = ftwt(workTreePath(remote_wt_hash));
+  if(current_wt == NULL){
+    err_logf(E_ERR, "Conversion du worktree %s", current_wt);
+  }
+
+  List *conflicts = initList();
+
+  WorkTree* merged_wt = mergeWorkTrees(current_wt, remote_wt, &conflicts);
+
+  if(sizeList(conflicts) > 0){
+    err_logf(E_OK, "La fusion de la branche %s et %s rencontre des conflits", current_branch, remote_branch);
+    return conflicts;
+  }
+
+  char *hash = saveWorkTree(merged_wt, ".");  
+
+  Commit *merged_commit = createCommit(hash);
+  
+  commitSet(merged_commit, "predecessor", current_wt_hash);
+  commitSet(merged_commit, "merged_predecessor", remote_wt_hash);
+
+  if(message != NULL){
+    commitSet(merged_commit, "message", remote_wt_hash);
+  }
+  
+  const char* commit_hash = blobCommit(merged_commit);
+
+  createUpdateRef(current_branch, commit_hash);
+  createUpdateRef("HEAD", commit_hash);
+
+  deleteRef(remote_branch);
+
+  restoreCommit(commit_hash);
+
+  free(current_branch);
+  free(current_commit_path);
+  free(remote_commit_path);
+  freeCommit(current_commit);
+  freeCommit(remote_commit);
+  free(current_wt_hash);
+  free(remote_wt_hash);
+  freeWorkTree(current_wt);
+  freeWorkTree(remote_wt);
+  freeList(conflicts);
+  freeWorkTree(merged_wt);
+  free(hash);
+  freeCommit(merged_commit);
+  free((void *)commit_hash);
+
+  return NULL;
+}
+
+void createDeletionCommit(const char *branch, List *conflicts, const char* message){
+  char *current_branch = getCurrentBranch();
+  myGitCheckoutBranch(branch);
+
+  WorkTree *wt = ftwt(commitGet(ftc(commitPath(getRef(branch))), "tree"));
+
+  remove(".add");
+
+  for(int i = 0; i < wt->n; i++)
+    if(searchList(conflicts, wt->tab[i].name))
+      myGitAdd(wt->tab[i].name);
+
+  myGitCommit(branch, message);
+
+  myGitCheckoutBranch(current_branch);
+
+  free(current_branch);
+  freeWorkTree(wt);
+}
+
+
+
+

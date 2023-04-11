@@ -78,7 +78,6 @@ void printBranch(const char *branch)
       
       path = commitPath(commit_hash);
 
-      freeCommit(c);
       c = ftc(path);
     }
     else {
@@ -118,7 +117,6 @@ List *branchList(const char *branch)
 
       path = commitPath(hash);
 
-      freeCommit(c);
       c = ftc(path);
     }
     else {

@@ -14,6 +14,6 @@ void myGitAdd(const char* file);
  * @param branch_name Nom de la branche
  * @param message Message du commit
  */
-void myGitCommit(char *branch_name, char *message);
+void myGitCommit(const char *branch_name, const char *message);
 
 #endif

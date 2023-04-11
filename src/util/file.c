@@ -172,7 +172,7 @@ char *filePath(const char *hash){
 
     path[0] = '\0';
 
-    char *hash_path = hashToPath(sha256file(hash));
+    char *hash_path = hashToPath(hash);
 
     if(hash_path == NULL){
         err_logf(E_ERR, "hashToPath a retourné NULL avec %s", hash);

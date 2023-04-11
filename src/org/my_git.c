@@ -8,6 +8,7 @@
 #include "../include/org/commit.h"
 #include "../include/const.h"
 #include "../include/util/file.h"
+#include "../include/util/hash.h"
 #include "../include/test/debug.h"
 
 void myGitAdd(const char *file)
@@ -22,7 +23,7 @@ void myGitAdd(const char *file)
   }
 
   if(file_exists(file)){
-    appendWorkTree(wt, file, NULL, 0);
+    appendWorkTree(wt, file, sha256file(file), 0);
     wttf(wt, ".add");
   }
   else {
@@ -31,7 +32,7 @@ void myGitAdd(const char *file)
   free(wt);
 }
 
-void myGitCommit(char *branch_name, char *message)
+void myGitCommit(const char *branch_name, const char *message)
 {
   if(!file_exists(".refs")){
     err_log(E_WARN, "Il faut d'abord initialiser les références du projets");

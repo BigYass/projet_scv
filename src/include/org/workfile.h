@@ -180,4 +180,15 @@ void restoreWorkTree(WorkTree* wt, char* path);
  */
 WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts);
 
+/**
+ * @brief Fusionne la branche courrante avec la branche passé en paramètre si aucun conflit existe
+ * 
+ * @param remote_branch La branche à fusionné
+ * @param message Le message du merge
+ * @return List* La liste avec les hash en non-conflits
+ */
+List* merge(const char* remote_branch, const char* message);
+
+void createDeletionCommit(const char *branch, List *conflicts, const char* message);
+
 #endif
