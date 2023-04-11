@@ -211,17 +211,23 @@ char *blobCommit(Commit *c)
   ctf(c, fname);
 
   char *hash = sha256file(fname);
-  char *path = hashToPath(hash);
+  char *hash_path = hashToPath(hash);
 
-  if(path == NULL){
+  if(hash_path == NULL){
     err_log(E_ERR, "path est null...");
     if(hash) free(hash);
     return NULL;
   }
 
-  strcat(path, ".c");
+  char full_path[MAX_BUF_SIZE] = {0};
 
-  cp(path, fname);
+  strcat(full_path, TMP_DIRECTORY);
+  strcat(full_path, "/");
+  strcat(full_path, hash_path);
+  strcat(full_path, ".c");
+
+
+  cp(full_path, fname);
   return hash;
 }
 

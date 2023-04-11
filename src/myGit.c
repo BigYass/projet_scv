@@ -119,11 +119,27 @@ int main(int argc, char *argv[])
         }
 
         char *name = NULL;
-        char *msg = NULL;
+        size_t size = sizeof(char) * MAX_BUF_SIZE;
+        char *msg = malloc(size);
+
+        memset(msg, 0, size);
+
+        bool is_message = false;
 
         for(int i = 2; i < argc; i++){
-            if(argv[i][0] == '-') continue; //Si le paramètre commence par un tiret
-            else if(!strcmp(argv[i-1], "-m")) msg = argv[i]; //Si il est précédé de -m il s'agit du message
+            if(argv[i][0] == '-') { //Si le paramètre commence par un tiret
+                continue;
+                if(!strcmp(argv[i-1], "-m")){
+                    is_message = true;
+                }
+            } 
+            else if(is_message){ //Si il est précédé de -m il s'agit du message
+                if(strlen(msg) + strlen(argv[i]) >= size){
+                    size <<= 1;
+                    msg = realloc(msg, size);
+                }
+                strcat(msg, argv[i]);
+            }
             else name = argv[i]; // Sinon il s'agit du nom de la branche
         }
         
@@ -134,6 +150,7 @@ int main(int argc, char *argv[])
         }
 
         myGitCommit(name, msg);
+        printf("Le commit " YELLOW "\"%s\"" RESET " a été enregistré dans la branche " YELLOW "%s" RESET "\n", msg, name);
     }
     else if(!strcmp(argv[1], "get-current-branch")){
         printf("La branche courrante est "YELLOW"%s"RESET"\n", getCurrentBranch());

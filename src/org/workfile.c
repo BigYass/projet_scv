@@ -236,12 +236,19 @@ char *blobWorkTree(WorkTree *wt)
     return "";
   }
 
-  char *hash = sha256file(fname);
-  char *path = hashToPath(hash);
-  strcat(path, ".t");
+  char full_path[MAX_BUF_SIZE] = {0}; //Chaine vide
 
-  cp(path, fname);
-  free(path);
+  char *hash = sha256file(fname);
+  char *hash_path = hashToPath(hash);
+
+  // Construction du chemin d'accès temporaire
+  strcat(full_path, TMP_DIRECTORY);
+  strcat(full_path, "/");
+  strcat(full_path, hash_path);
+  strcat(full_path, ".t");
+  
+  cp(full_path, fname);
+  free(hash_path);
   return hash;
 }
 
