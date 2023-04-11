@@ -90,6 +90,14 @@ Commit* createCommit(const char* hash);
 char* commitGet(Commit* c, const char* key);
 
 /**
+ * @brief Convertit le hash d'un commit en son chemin d'accès
+ * 
+ * @param hash Le hash du commit
+ * @return char* Le chemin d'accès au commit
+ */
+char* commitPath(const char* hash);
+
+/**
  * @brief Convertit un commit en une chaine de charactère
  * 
  * @param c Le commit

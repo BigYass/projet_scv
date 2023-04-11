@@ -162,33 +162,38 @@ void cp(const char *to, const char *from)
     fclose(source);
 }
 
-
-
-void blobFile(const char *file)
-{
+char *filePath(const char *hash){
     char *path = malloc(sizeof(char) * MAX_BUF_SIZE);
 
-    if(path == NULL || file == NULL){
+    if(path == NULL || hash == NULL){
         err_log(E_ERR, "Null exeption");
-        return;
+        return NULL;
     }
 
     path[0] = '\0';
 
-    char *hash_path = hashToPath(sha256file(file));
+    char *hash_path = hashToPath(sha256file(hash));
 
     if(hash_path == NULL){
-        err_logf(E_ERR, "hashToPath a retourné NULL avec %s", file);
+        err_logf(E_ERR, "hashToPath a retourné NULL avec %s", hash);
         free(path);
-        return;
+        return NULL;
     }
 
     strcat(path, TMP_DIRECTORY);
     strcat(path, "/");
     strcat(path, hash_path);
 
+    free(hash_path);
+
+    return path;
+}
+
+void blobFile(const char *file)
+{
+    char *path = filePath(file);
+
     cp(path, file);
 
-    free(hash_path);
     free(path);
 }

@@ -1,6 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -ggdb
 
+#test
+
 SRC = src
 BIN = bin
 OBJ = obj
@@ -21,7 +23,7 @@ $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BIN)/* $(TMP)/* $(OBJS)
+	rm -rf $(BIN)/* $(OBJS)
 
 
 run:

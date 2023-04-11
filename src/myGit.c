@@ -7,6 +7,7 @@
 #include "include/const.h"
 
 #include "include/test/test.h"
+#include "include/test/debug.h"
 
 #include "include/org/refs.h"
 #include "include/org/my_git.h"
@@ -51,7 +52,6 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-
     create_tmp_file();
 
     if (!strcmp(argv[1], "init")){
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
             return 0;
         }
         deleteRef(argv[2]);
-        printf("La reference " YELLOW "%s a ete supprime\n", argv[2]);
+        printf("La reference " YELLOW "%s" RESET " a ete supprime\n", argv[2]);
     }
     else if(!strcmp(argv[1], "add")){
         if(argc < 3){
@@ -128,9 +128,9 @@ int main(int argc, char *argv[])
 
         for(int i = 2; i < argc; i++){
             if(argv[i][0] == '-') { //Si le paramètre commence par un tiret
-                continue;
-                if(!strcmp(argv[i-1], "-m")){
+                if(strcmp(argv[i-1], "-m")){
                     is_message = true;
+                    err_log(E_OK, "Paramètre -m détecté, changement de mode");
                 }
             } 
             else if(is_message){ //Si il est précédé de -m il s'agit du message
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
         }
         else {
             myGitCheckoutCommit(argv[2]);
-            printf("Déplacement de commit vers " YELLOW "%s" RESET, argv[2]);
+            printf("Déplacement de commit vers " YELLOW "%s" RESET "\n", argv[2]);
         }
     }
     
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
     
 
     // FIN DU PROGRAMME
-    puts(GRAY"Fin du programme...");
+    puts(GREEN "Fin du programme..." RESET);
     return 0;
 }
 

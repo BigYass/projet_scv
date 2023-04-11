@@ -138,6 +138,14 @@ int wttf(WorkTree* wt, const char* file);
 WorkTree* ftwt(const char* file);
 
 /**
+ * @brief Convertit le hash d'un worktree en son chemin d'accès
+ * 
+ * @param hash Le hash du commit
+ * @return char* Le chemin d'accès au worktree
+ */
+char* workTreePath(const char* hash);
+
+/**
  * @brief Fait un instantanné d'un WorkTree (le fichier ou répertoire) et renvoie son hash
  * 
  * @param wt Le WorkTree

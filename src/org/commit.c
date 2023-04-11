@@ -54,7 +54,7 @@ char *kvts(kvp *k)
   }
   char *s = malloc(sizeof(char) * MAX_BUF_SIZE);
 
-  sprintf(s, "%s : %s", &(k->key) ? k->key : "", &(k->value) ? k->value : "");
+  sprintf(s, "%s : %s", k->key ? k->key : "", k->value ? k->value : "");
 
   return s;
 }
@@ -125,6 +125,7 @@ char *commitGet(Commit *c, const char *key)
     if(!strcmp(c->T[(hash + i) % c->size]->key, key))
       return c->T[(hash + i) % c->size]->value;
 
+  err_logf(E_OK, "Tentative d'accès à une clé non existente %s dans commit 0x%x", key, c);
   return NULL;
 }
 
@@ -203,6 +204,33 @@ Commit *ftc(const char *file)
   return c;
 }
 
+char* commitPath(const char* hash){
+
+  if(hash == NULL){
+    err_log(E_WARN, "Tentative de conversion avec un hash null");
+    return NULL;
+  }
+
+  char *hash_path = hashToPath(hash);
+
+  if(hash_path == NULL){
+    err_logf(E_WARN, YELLOW "hashToPath(\"%s\") " RESET " a renvoyé NULL", hash);
+    return NULL;
+  }
+
+  char *path = malloc(sizeof(char) * MAX_BUF_SIZE);
+  memset(path, 0, MAX_BUF_SIZE); 
+
+  strcat(path, TMP_DIRECTORY);
+  strcat(path, "/");
+  strcat(path, hash_path);
+  strcat(path, ".c");
+
+  free(hash_path);
+
+  return path;
+}
+
 char *blobCommit(Commit *c)
 {
   char fname[MAX_BUF_SIZE] = "myWorkTreeXXXXXX";
@@ -211,33 +239,47 @@ char *blobCommit(Commit *c)
   ctf(c, fname);
 
   char *hash = sha256file(fname);
-  char *hash_path = hashToPath(hash);
-
-  if(hash_path == NULL){
-    err_log(E_ERR, "path est null...");
-    if(hash) free(hash);
-    return NULL;
-  }
-
-  char full_path[MAX_BUF_SIZE] = {0};
-
-  strcat(full_path, TMP_DIRECTORY);
-  strcat(full_path, "/");
-  strcat(full_path, hash_path);
-  strcat(full_path, ".c");
+  char *full_path = commitPath(hash);
 
 
   cp(full_path, fname);
+
+  remove(fname);
   return hash;
 }
 
 void restoreCommit(const char *hash)
 {
-  char *path = hashToPath(hash);
+  char *path = commitPath(hash);
+
   Commit *c = ftc(path);
 
-  char *tree_hash = strcat(hashToPath(commitGet(c, "tree")), ".t");
+  if(c == NULL){
+    err_log(E_ERR, "La fonction ftc a renvoyé NULL");
+    return;
+  }
+
+  char *wt_hash = commitGet(c, "tree");
+
+  if(wt_hash == NULL){
+    err_log(E_ERR, "Le commit de contien pas \"tree\" ?");
+    return;
+  }
+
+  char *tree_hash = workTreePath(wt_hash);
+
+  if(wt_hash == NULL){
+    err_logf(E_ERR, "Impossible de convertir" YELLOW "%s" RESET " en chemin d'accès...", wt_hash);
+    return;
+  }
+
   WorkTree *wt = ftwt(tree_hash);
+
+  if(wt == NULL){
+    err_logf(E_ERR, "Problème de conversion en WorkTree du fichier %s", tree_hash);
+    return;
+  }
+  
   restoreWorkTree(wt, ".");
 
   free(path);

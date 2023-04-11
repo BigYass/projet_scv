@@ -14,10 +14,11 @@
  * @brief Niveau de debug |
  * 0 : Aucun debug |
  * 1 : Erreur seulement | 
- * 2 : Erreur et Warnings
+ * 2 : Erreur et Warnings |
+ * 3 : Tout
  * 
  */
-#define DEBUG 2
+#define DEBUG 3
 
 #define TMP_DIRECTORY ".tmp"
 
@@ -40,8 +41,6 @@
 #define CYAN    "\033[36m"
 //Mets le texte en blanc
 #define WHITE   "\033[37m"
-//Mets le texte en blanc
-#define GRAY   "\033[38m"
 
 
 //Mets le fond en noir

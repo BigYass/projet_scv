@@ -13,10 +13,10 @@ void __err_logf(const char* __file, const int __line, const char* __function, er
     {
       case E_OK:
         #if DEBUG > 2
-        printf("[DEBUG] ");
+        printf(WHITE"[INFO] " RESET);
         printf("Dans la fonction %s (%s:%d) : ", __function, __file, __line);
         vprintf(format, args);
-        puts("\n");
+        printf("\n");
         #endif
         break;
       case E_WARN:
@@ -24,7 +24,7 @@ void __err_logf(const char* __file, const int __line, const char* __function, er
         printf(YELLOW"[WARNING] "RESET);
         printf("Dans la fonction %s (%s:%d) : ", __function, __file, __line);
         vprintf(format, args);
-        puts("\n");
+        printf("\n");
         #endif
         break;
 
@@ -33,7 +33,7 @@ void __err_logf(const char* __file, const int __line, const char* __function, er
         fprintf(stderr, RED"[ERREUR] "RESET);
         fprintf(stderr, "Dans la fonction %s (%s:%d) : ", __function, __file, __line);
         vfprintf(stderr, format, args);
-        puts("\n");
+        printf("\n");
         #endif
         break;
     }

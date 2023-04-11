@@ -63,8 +63,8 @@ char *getCurrentBranch()
 void printBranch(const char *branch)
 {
   char *commit_hash = getRef(branch);
-  char *path = hashToPath(commit_hash);
-  strcat(path, ".c");
+  char *path = commitPath(commit_hash);
+
   Commit *c = ftc(path);
 
   while(c != NULL){
@@ -76,8 +76,7 @@ void printBranch(const char *branch)
     if(prev){
       commit_hash = prev;
       
-      path = hashToPath(commit_hash);
-      strcat(path, ".c");
+      path = commitPath(commit_hash);
 
       freeCommit(c);
       c = ftc(path);
@@ -93,9 +92,22 @@ List *branchList(const char *branch)
   List *L = initList();
 
   char *hash = getRef(branch);
-  char *path = hashToPath(hash);
-  strcat(path, ".c");
+  if(hash == NULL){
+    err_logf(E_ERR, "getRef(\"%s\") a renvoye NULL", branch);
+    return NULL;
+  }
+
+  char *path = commitPath(hash);
+  if(path == NULL){
+    err_logf(E_ERR, "commitPath(\"%s\") a renvoye NULL", hash);
+    return NULL;
+  }
+
   Commit *c = ftc(path);
+  if(c == NULL){
+    err_logf(E_ERR, "La conversion de (\"%s\") a échoué", path);
+    return NULL;
+  }
 
   while(c != NULL){
     insertFirst(L, buildCell(hash));
@@ -104,8 +116,7 @@ List *branchList(const char *branch)
     if(prev){
       hash = prev;
 
-      path = hashToPath(hash);
-      strcat(path, ".c");
+      path = commitPath(hash);
 
       freeCommit(c);
       c = ftc(path);

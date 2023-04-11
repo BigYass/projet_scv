@@ -55,7 +55,13 @@ bool file_exists(const char *file);
  */
 void cp(const char *to, const char *from);
 
-
+/**
+ * @brief 
+ * 
+ * @param hash 
+ * @return char* 
+ */
+char *filePath(const char* hash);
 
 /**
  * @brief Fait un instantané du fichier

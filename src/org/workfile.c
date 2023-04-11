@@ -223,6 +223,32 @@ WorkTree *ftwt(const char *file)
   return wt;
 }
 
+char* workTreePath(const char* hash){
+  if(hash == NULL){
+    err_log(E_WARN, "Tentative de conversion avec un hash null");
+    return NULL;
+  }
+
+  char *hash_path = hashToPath(hash);
+
+  if(hash_path == NULL){
+    err_logf(E_WARN, RED "hashToPath(\"%s\") " RESET " a renvoyé NULL", hash);
+    return NULL;
+  }
+
+  char *path = malloc(sizeof(char) * MAX_BUF_SIZE);
+  memset(path, 0, MAX_BUF_SIZE); 
+
+  strcat(path, TMP_DIRECTORY);
+  strcat(path, "/");
+  strcat(path, hash_path);
+  strcat(path, ".t");
+
+  free(hash_path);
+
+  return path;
+}
+
 char *blobWorkTree(WorkTree *wt)
 {
   char fname[MAX_BUF_SIZE] = "myWorkTreeXXXXXX";
@@ -236,6 +262,7 @@ char *blobWorkTree(WorkTree *wt)
     return "";
   }
 
+
   char full_path[MAX_BUF_SIZE] = {0}; //Chaine vide
 
   char *hash = sha256file(fname);
@@ -248,6 +275,7 @@ char *blobWorkTree(WorkTree *wt)
   strcat(full_path, ".t");
   
   cp(full_path, fname);
+  remove(fname);
   free(hash_path);
   return hash;
 }
@@ -304,28 +332,30 @@ void restoreWorkTree(WorkTree *wt, char *path)
 {
   for (int i = 0; i<wt -> n; i++)
   {
-    char *full_path = malloc(sizeof(char) * (strlen(path) + strlen(wt->tab[i].name) + 2));
+    size_t size = strlen(path) + strlen(wt->tab[i].name) + 2;
+    char *full_path = malloc(sizeof(char) * size);
+    memset(full_path, 0, size);
+
     strcat(full_path, path);
     strcat(full_path, "/");
     strcat(full_path, wt->tab[i].name);
 
-    char *copyPath = hashToPath(wt->tab[i].hash);
     char *hash = wt->tab[i].hash;
     if (isWorkTree(hash) == 0)
     { // si c’est un fichier
+    char *copyPath = filePath(hash);
       cp(full_path, copyPath);
       setMode(getChmod(copyPath), full_path);
     }
     else if (isWorkTree(hash) == 1)
     { // si c’est un repertoire
-      strcat(copyPath, ".t");
+      char *copyPath = workTreePath(hash);
       WorkTree *nwt = ftwt(copyPath);
       restoreWorkTree(nwt, full_path);
       setMode(getChmod(copyPath), full_path);
       freeWorkTree(nwt);
     }
     free(full_path);
-    free(copyPath);
   }
 }
 
