@@ -68,6 +68,7 @@ void myGitCommit(char *branch_name, char *message)
 
   char *hash = saveWorkTree(wt, ".");
   Commit *c = createCommit(hash);
+  free(hash);
 
   if (strlen(last_hash) > 0){
     commitSet(c, "predecessor", last_hash);

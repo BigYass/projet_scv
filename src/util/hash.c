@@ -23,9 +23,20 @@ char* sha256file(const char* file){
     hashFile(file, fname);
 
     FILE* f = fopen(fname,  "r");
+
+    if(f == NULL){
+        err_logf(E_ERR, "Problèmé lors de l'ouverture de " YELLOW "%s" RESET, fname);
+        return NULL;
+    }
+    
     char* hash = malloc(sizeof(char) * 65);
+
+    memset(hash, 0, 65);
+
     fgets(hash, 64, f);
     hash[64] = '\0';
+
+    fclose(f);
 
     return hash;
 }

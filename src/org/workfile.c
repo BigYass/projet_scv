@@ -225,7 +225,7 @@ WorkTree *ftwt(const char *file)
 
 char *blobWorkTree(WorkTree *wt)
 {
-  char fname[MAX_BUF_SIZE] = ".tmp/myWorkTreeXXXXXX";
+  char fname[MAX_BUF_SIZE] = "myWorkTreeXXXXXX";
   mkstemp(fname);
 
   int err = 0;

@@ -16,17 +16,24 @@ kvp *createKeyVal(const char *key, const char *val)
 {
   kvp* k = malloc(sizeof(kvp));
 
-  k->key = (char *) key;
-  k->value = (char *) val;
+  k->key = (char *) strdup(key);
+  k->value = (char *) strdup(val);
 
   return k;
 }
 
 void freeKeyVal(kvp *kv)
 {
-  free(kv->key);
-  free(kv->value);
+  if(kv == NULL){
+    err_log(E_WARN, "Tentative de libéré une paire null");
+    return;
+  }
+
+  if(kv->key) free(kv->key);
+  if(kv->value) free(kv->value);
   free(kv);
+
+  kv = NULL;
 }
 
 void freeCommit(Commit *c)
@@ -35,23 +42,37 @@ void freeCommit(Commit *c)
     if(c->T[i]) freeKeyVal(c->T[i]);
 
   free(c);
+
+  c = NULL;
 }
 
 char *kvts(kvp *k)
 {
+  if(k == NULL){
+    err_log(E_WARN, "Tentative de conversion d'une paire NULL");
+    return NULL;
+  }
   char *s = malloc(sizeof(char) * MAX_BUF_SIZE);
 
-  sprintf(s, "%s : %s", k->key, k->value);
+  sprintf(s, "%s : %s", &(k->key) ? k->key : "", &(k->value) ? k->value : "");
 
   return s;
 }
 
 kvp *stkv(const char *str)
 {
-  char key[MAX_BUF_SIZE] = "\0", val[MAX_BUF_SIZE] = "\0";
+  char *key = malloc(sizeof(char) * MAX_BUF_SIZE), *val = malloc(sizeof(char) * MAX_BUF_SIZE);
+
+  memset(key, 0, MAX_BUF_SIZE);
+  memset(val, 0, MAX_BUF_SIZE);
+
   sscanf(str, "%s : %s", key, val);
 
-  return createKeyVal(key, val);
+  kvp *result = createKeyVal(key, val);
+
+  free(key); free(val);
+
+  return result;
 }
 
 Commit *initCommit()
@@ -62,11 +83,18 @@ Commit *initCommit()
   commit->size = COMMIT_SIZE;
   commit->T = malloc(sizeof(kvp) * COMMIT_SIZE);
 
+  memset(commit->T, 0, COMMIT_SIZE * sizeof(kvp));
+
   return commit;
 }
 
 void commitSet(Commit *c, const char *key, const char *value)
 {
+  if(key == NULL){
+    err_log(E_WARN, "Tentative d'insertion d'une clé nul dans un commit");
+    return;
+  }
+
   if(c->n >= c->size){
     err_log(E_ERR, "Tentative d'insertion d'une clé dans un commit plein...");
     return;
@@ -78,6 +106,7 @@ void commitSet(Commit *c, const char *key, const char *value)
   }
 
   c->T[hash] = createKeyVal(key, value);
+
   c->n++;
 }
 
@@ -176,13 +205,19 @@ Commit *ftc(const char *file)
 
 char *blobCommit(Commit *c)
 {
-  char fname[MAX_BUF_SIZE] = ".tmp/myWorkTreeXXXXXX";
+  char fname[MAX_BUF_SIZE] = "myWorkTreeXXXXXX";
   mkstemp(fname);
 
   ctf(c, fname);
 
   char *hash = sha256file(fname);
   char *path = hashToPath(hash);
+
+  if(path == NULL){
+    err_log(E_ERR, "path est null...");
+    if(hash) free(hash);
+    return NULL;
+  }
 
   strcat(path, ".c");
 
