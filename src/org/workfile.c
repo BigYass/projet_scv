@@ -318,11 +318,11 @@ char *saveWorkTree(WorkTree *wt, char *path)
 
 int isWorkTree(char *hash)
 {
-  if (file_exists(strcat(hashToPath(hash), ".t")))
+  if (file_exists(strcat(filePath(hash), ".t")))
   {
     return 1;
   }
-  if (file_exists(hashToPath(hash)))
+  if (file_exists(filePath(hash)))
   {
     return 0;
   }

@@ -38,6 +38,8 @@ char* sha256file(const char* file){
 
     fclose(f);
 
+    remove(fname);
+
     return hash;
 }
 
