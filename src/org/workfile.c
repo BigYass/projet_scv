@@ -54,11 +54,13 @@ WorkFile *createWorkFile(const char *name)
 
 void freeWorkFile(WorkFile *wf)
 {
-  if(wf != NULL){
+  if(wf == NULL){
+    err_log(E_WARN, "Tentative de libéré un WorkFile null..");
+    return;
+  }
   if(wf->hash != NULL) free(wf->hash);
   if(wf->name != NULL) free(wf->name);
   free(wf);
-  }
 }
 
 char *wfts(WorkFile *wf)
@@ -96,10 +98,16 @@ WorkTree *initWorkTree()
 }
 
 void freeWorkTree(WorkTree *wt){
-  if(wt->tab != NULL)
-    freeWorkFile(wt->tab);
-  if(wt != NULL)
-    free(wt);
+  if(wt == NULL){
+    err_log(E_WARN, "Tentative de libéré un WorkTree null..");
+    return;
+  }
+  for(int i = 0; i < wt->size; i++){
+    if(wt->tab[i].name) free(wt->tab[i].name);
+    if(wt->tab[i].hash) free(wt->tab[i].hash);
+  }
+  free(wt->tab);
+  free(wt);
 }
 
 int inWorkTree(WorkTree *wt, const char *name)
@@ -169,12 +177,9 @@ WorkTree *stwt(char *s)
   {
     WorkFile *wf = stwf(token);
 
-    if (appendWorkTree(wt, wf->name, wf->hash, wf->mode))
-    {
-      free(wf);
-      break;
-    }
-    free(wf);
+    appendWorkTree(wt, wf->name, wf->hash, wf->mode);
+
+    freeWorkFile(wf);
 
     token = strtok(NULL, "\n");
   }

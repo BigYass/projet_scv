@@ -19,6 +19,7 @@ void initRefs()
   FILE *f = fopen(".refs/master", "w");
   fclose(f);
   f = fopen(".refs/HEAD", "w");
+  fclose(f);
 }
 
 void createUpdateRef(const char *ref_name, const char *hash)

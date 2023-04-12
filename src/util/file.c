@@ -84,6 +84,7 @@ List *ftol(const char *path)
     // La chaine est récupéré, conversion en liste
 
     List *l = stol(s);
+    free(s);
 
     return l;
 }
@@ -203,9 +204,11 @@ char *filePath(const char *hash){
 
 void blobFile(const char *file)
 {
-    char *path = filePath(sha256file(file));
+    char *hash = sha256file(file);
+    char *path = filePath(hash);
 
     cp(path, file);
 
+    free(hash);
     free(path);
 }

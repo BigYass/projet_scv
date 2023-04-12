@@ -44,8 +44,9 @@ void freeCommit(Commit *c)
   }
 
   for(int i = 0; i < c->size; i++)
-    if(c->T[i]) freeKeyVal(c->T[i]);
+    if(c->T[i] != NULL) freeKeyVal(c->T[i]);
 
+  free(c->T);
   free(c);
 
   c = NULL;

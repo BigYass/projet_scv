@@ -53,9 +53,19 @@ void freeList(List *L){
     while(cursor != NULL){
         Cell *prev = cursor;
         cursor = cursor->next;
-        if(prev) free(prev);
+        freeCell(prev);
     }
     free(L);
+}
+
+void freeCell(Cell *c){
+    if(c == NULL){
+        err_log(E_WARN, "Tentative de libéré une cellule null");
+        return;
+    }
+
+    if(c->data) free(c->data);
+    free(c);
 }
 
 char* ctos(Cell* c){
@@ -134,7 +144,10 @@ List* stol(const char* s){
 
     char *token = strtok(s_buf, "|"); //On cherche le prochain mot
     //Tant que s n'est pas NULL et non égale à '\0'
-    do insertFirst(l, buildCell(token)); 
+    do {
+        Cell *c = buildCell(token);
+        insertFirst(l, c); 
+    }
     while((token = strtok(NULL, "|")) != NULL);
 
     free(s_buf);

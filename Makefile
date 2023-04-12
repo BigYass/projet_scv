@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -ggdb
 
-# master
+# code de zinzin
 
 SRC = src
 BIN = bin

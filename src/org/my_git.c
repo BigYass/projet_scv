@@ -23,8 +23,11 @@ void myGitAdd(const char *file)
   }
 
   if(file_exists(file)){
-    appendWorkTree(wt, file, sha256file(file), 0);
+    char *hash = sha256file(file);
+    appendWorkTree(wt, file, hash, 0);
     wttf(wt, ".add");
+    
+    free(hash);
   }
   else {
     err_logf(E_ERR, "Bruh, le fichier %s n'existe pas...", file);

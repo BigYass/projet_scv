@@ -39,7 +39,7 @@ void test_hash(){
     }
     printf("%s%s%s\n",GREEN, hash, RESET);
 
-    printf("Conversion en chemin..");
+    printf("Conversion en chemin..\n");
     char *path = hashToPath(hash);
     if(path == NULL){
         printf(RED "hashToPath(\"%s\") renvoie null...\n" RESET, hash);
@@ -65,22 +65,52 @@ void test_list(){
     // TEST CELLULES ET LISTES
     puts("Creation de la liste et des cellules...");
     List* l = initList();
+    if(l == NULL){
+        printf(RED "initList() renvoie null...\n" RESET);
+        return;
+    }
+
+    Cell *cells[] = {
+        buildCell("Amethyste"),
+        buildCell("Diamant"),
+        buildCell("Emeraude"),
+        buildCell("Rubis"),
+        buildCell("Saphir")
+    };
+    int size = sizeof_a(cells);
     
-    insertFirst(l,buildCell("Amethyste"));
-    insertFirst(l,buildCell("Diamant"));
-    insertFirst(l,buildCell("Emeraude"));
-    insertFirst(l,buildCell("Rubis"));
-    insertFirst(l,buildCell("Saphir"));
+    for(int i = 0; i < size; i++)
+        insertFirst(l,cells[i]);
 
     puts("Conversion de la liste en chaine de charactere...");
     char* s = ltos(l);
+    if(s == NULL){
+        printf(RED "ltos(l) renvoie null...\n" RESET);
+        freeList(l);
+        return;
+    }
+
     printf("Conversion : %s%s%s\n",GREEN, s, RESET);
 
     puts("Reconversion de la chaine en liste...");
     List* l2 = stol(s);
-    printf("Résultat : %s%s%s\n", GREEN, ltos(l2), RESET);
+    if(l2 == NULL){
+        printf(RED "stol(\"%s\") renvoie null...\n" RESET, s);
+        freeList(l);
+        free(s);
+        return;
+    }
+
+    free(s);
+    s = ltos(l2);
+
+    printf("Résultat : %s%s%s\n", GREEN, s, RESET);
 
     printf("=== FIN DU TEST DES LISTES ===\n");
+
+    freeList(l);
+    freeList(l2);
+    free(s);
 }
 
 void test_files(){
@@ -89,7 +119,19 @@ void test_files(){
     
     static const char* filename = "Makefile";
     const char* hash = sha256file(filename);
-    List *l2 = stol("Amethyste|Diamant|Emeraude|Rubis|Saphir");
+    if(hash == NULL){
+        printf(RED "sha256file(\"%s\") renvoie null...\n" RESET, filename);
+        return;
+    }
+
+    const char list_string[] = "Amethyste|Diamant|Emeraude|Rubis|Saphir";
+    List *l2 = stol(list_string);
+    if(l2 == NULL){
+        printf(RED "stol(\"%s\") renvoie null...\n" RESET, list_string);
+        free((void *)hash);
+        return;
+    }
+    
 
     const char* tmpfile = TEST_DIRECTORY "/burger.list";
     printf("Stockage de la liste dans : %s%s%s \n", YELLOW, tmpfile, RESET);
@@ -97,11 +139,45 @@ void test_files(){
 
     printf("Récupération de la liste à partir du fichier %s%s%s...\n", YELLOW, tmpfile, RESET);
     List *l3 = ftol(tmpfile);
-    printf("Résultat : %s%s%s\n", GREEN, ltos(l3), RESET);
+    if(l3 == NULL){
+        printf(RED "ftol(\"%s\") renvoie null...\n" RESET, tmpfile);
+        free((void *)hash);
+        freeList(l2);
+        return;
+    }
+
+    char *s = ltos(l3);
+    if(s == NULL){
+        printf(RED "listdir(\".\") renvoie null...\n" RESET);
+        free((void *)hash);
+        freeList(l2);
+        freeList(l3);
+        return;
+    }
+    printf("Résultat : %s%s%s\n", GREEN, s, RESET);
 
     puts("Listage de tout les fichiers du dossier courant...\n");
     List* all_files = listdir(".");
-    printf("Résultat : %s%s%s\n", GREEN, ltos(all_files), RESET);
+    if(all_files == NULL){
+        printf(RED "listdir(\".\") renvoie null...\n" RESET);
+        free((void *)hash);
+        freeList(l2);
+        freeList(l3);
+        free(s);
+        return;
+    }
+
+    char *all_files_string = ltos(all_files);
+    if(all_files_string == NULL){
+        printf(RED "ltos(\"%s\") renvoie null...\n" RESET, ltos(all_files));
+        free((void *)hash);
+        freeList(l2);
+        freeList(l3);
+        freeList(all_files);
+        free(s);
+        return;
+    }
+    printf("Résultat : %s%s%s\n", GREEN, all_files_string, RESET);
 
     printf("Vérification de l'existence de : %s%s%s\n", YELLOW, filename, RESET);
     printf("Résultat : %s\n", TO_BOOL(file_exists(filename)));
@@ -111,12 +187,32 @@ void test_files(){
     cp(cp_file, filename);
 
     printf("Création du chemin du dossier de l'instantané de %s\n", filename);
-    printf("Résultat : %s%s%s\n", GREEN, hashToPath(hash), RESET);
+
+    char *path = hashToPath(hash);
+    if(path == NULL){
+        printf(RED "hashToPath(\"%s\") renvoie null...\n" RESET, hash);
+        free((void *)hash);
+        freeList(l2);
+        freeList(l3);
+        freeList(all_files);
+        free(all_files_string);
+        free(s);
+        return;
+    }
+    printf("Résultat : %s%s%s\n", GREEN, path, RESET);
 
     printf("Création de l'instantatané de %s%s%s\n", GREEN, filename, RESET);
     blobFile(filename);
 
     printf("=== FIN DU TEST DES FICHIERS ===\n");
+
+    free((void *)hash);
+    freeList(l2);
+    freeList(l3);
+    freeList(all_files);
+    free(s);
+    free(all_files_string);
+    free(path);
 }
 
 void test_work_file(){
@@ -132,7 +228,10 @@ void test_work_file(){
 
     printf("Convertion en Workfile...\n");
     WorkFile *wf_tmp = stwf(s);
-    printf("Conversion : %s%s%s\n\n", GREEN, wfts(wf_tmp), RESET);
+    free(s);
+    s = wfts(wf_tmp);
+    printf("Conversion : %s%s%s\n\n", GREEN, s, RESET);
+
 
     printf("Cratioin d'un WorkTree...\n");
     WorkTree *wt = initWorkTree();
@@ -153,7 +252,9 @@ void test_work_file(){
 
     WorkTree *wt_tmp = stwt(s2);
 
-    printf("Résultat :\n%s\n", wtts(wt_tmp));
+    free(s);
+    s = wtts(wt_tmp);
+    printf("Résultat :\n%s\n", s);
 
     // MANIPULATION DE FICHIERS
     const char worktree_file[] = TEST_DIRECTORY "/worktree.t";
@@ -163,10 +264,21 @@ void test_work_file(){
 
     printf("Récupération du WorkTree dans " YELLOW "%s" RESET "..\n", worktree_file);
     WorkTree * wt_copy = ftwt(worktree_file);
+
+    free(s);
+    s = wtts(wt_copy);
     
-    printf("Résultat : " YELLOW "%s" RESET "\n", wtts(wt_copy));
+    printf("Résultat : " YELLOW "%s" RESET "\n", s);
 
     printf("=== FIN DU TEST DES WORKFILES ===\n");
+
+    freeWorkFile(wf);
+    free(s);
+    freeWorkFile(wf_tmp);
+    freeWorkTree(wt);
+    free(s2);
+    freeWorkTree(wt_tmp);
+    freeWorkTree(wt_copy);
 }
 
 void test_branch(){

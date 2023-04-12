@@ -41,6 +41,13 @@ void insertFirst(List *L, Cell* C);
 void freeList(List *L);
 
 /**
+ * @brief Libère la mémoire d'une cellule
+ * 
+ * @param c Cellule à libéré
+ */
+void freeCell(Cell *c);
+
+/**
  * @brief Convertit une cellule en chaine de charactère (renvoie c->data)
  * 
  * @param c La cellule à convertir

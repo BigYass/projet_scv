@@ -333,23 +333,48 @@ int main(int argc, char *argv[])
         }
         init_test();
 
-        if(modules == NULL || commitGet(modules, "hash"))
-            test_hash();
-        if(modules == NULL || commitGet(modules, "list"))
-            test_list();
-        if(modules == NULL || commitGet(modules, "file"))
-            test_files();
-        if(modules == NULL || commitGet(modules, "worktree"))
-            test_work_file();
-        if(modules == NULL || commitGet(modules, "branch"))
-            test_branch();
-        if(modules == NULL || commitGet(modules, "commit"))
-            test_commit();
-        if(modules == NULL || commitGet(modules, "git"))
-            test_my_git();
-        if(modules == NULL || commitGet(modules, "refs"))
-            test_refs();
+        char *value = NULL;
 
+        value = commitGet(modules, "hash");
+        if(modules == NULL || value){
+            test_hash();
+            free(value);
+        }
+        value = commitGet(modules, "list");
+        if(modules == NULL || value){
+            test_list();
+            free(value);
+        }
+        value = commitGet(modules, "file");
+        if(modules == NULL || value){
+            test_files();
+            free(value);
+        }
+        value = commitGet(modules, "worktree");
+        if(modules == NULL || value){
+            test_work_file();
+            free(value);
+        }
+        value = commitGet(modules, "branch");
+        if(modules == NULL || value){
+            test_branch();
+            free(value);
+        }
+        value = commitGet(modules, "commit");
+        if(modules == NULL || value){
+            test_commit();
+            free(value);
+        }
+        value = commitGet(modules, "git");
+        if(modules == NULL || value){
+            test_my_git();
+            free(value);
+        }
+        value = commitGet(modules, "refs");
+        if(modules == NULL || value){
+            test_refs();
+            free(value);
+        }
         freeCommit(modules);
     }
     else {
