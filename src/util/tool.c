@@ -9,11 +9,11 @@ void init_tool(){
   srand(time(NULL));
 }
 
-char *random_str(int len){
+char *random_str(unsigned long len){
   char *s = calloc(sizeof(char), len + 1);
 
   static const char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
-  int characters_len = sizeof_a(characters);
+  unsigned long characters_len = sizeof_a(characters);
 
   for(size_t i = 0; i < len; i++)
     s[i] = characters[rand() % characters_len];

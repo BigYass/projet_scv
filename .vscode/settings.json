@@ -34,7 +34,8 @@
     "test.h": "c",
     "array": "c",
     "__tuple": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "tool.h": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

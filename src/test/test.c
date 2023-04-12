@@ -90,7 +90,7 @@ void test_files(){
     printf("Résultat : %s%s%s\n", GREEN, ltos(all_files), RESET);
 
     printf("Vérification de l'existence de : %s%s%s\n", YELLOW, filename, RESET);
-    printf("Résultat : %s%s%s\n", RED, TO_BOOL(file_exists(filename)), RESET);
+    printf("Résultat : %s\n", TO_BOOL(file_exists(filename)));
 
     const char* cp_file = TEST_DIRECTORY "/Burger.txt";
     printf("Copiage de %s vers %s\n", filename, cp_file);
@@ -130,7 +130,7 @@ void test_work_file(){
     appendWorkTree(wt, "__onions", "5f", 0777);
     
 
-    printf("%s%s%s dans le WorkTree ? %s%s%s\n", YELLOW, wf->name, RESET, GREEN, TO_BOOL(inWorkTree(wt, wf->name)), RESET);
+    printf("%s%s%s dans le WorkTree ? %s\n", YELLOW, wf->name, RESET, TO_BOOL(inWorkTree(wt, wf->name)));
 
     char *s2 = wtts(wt);
     printf("Conversion :\n %s\n", s2);
@@ -157,20 +157,20 @@ void test_work_file(){
 
 void test_branch(){
     printf("=== DEBUT DU TEST DES BRANCHES ===\n");
-    printf("Initialisation des branches... (master)");
+    printf("Initialisation des branches... (master)\n");
     initBranch();
 
-    printf("Est ce que la branche "YELLOW"%s"RESET "existe ? "RED"%s"RESET"\n", "master", TO_BOOL(branchExists("master")));
-    printf("Est ce que la branche "YELLOW"%s"RESET "existe ? "RED"%s"RESET"\n", "branch_invisible", TO_BOOL(branchExists("branch_invisible")));
+    printf("Est ce que la branche "YELLOW"%s"RESET " existe ? %s\n", "master", TO_BOOL(branchExists("master")));
+    printf("Est ce que la branche "YELLOW"%s"RESET " existe ? %s\n", "branch_invisible", TO_BOOL(branchExists("branch_invisible")));
 
     const char new_branch_name[] = "burger";
 
-    printf("Est ce que la branche "YELLOW"%s"RESET "existe ? "RED"%s"RESET"\n", new_branch_name, TO_BOOL(branchExists(new_branch_name)));
+    printf("Est ce que la branche "YELLOW"%s"RESET " existe ? %s\n", new_branch_name, TO_BOOL(branchExists(new_branch_name)));
     
     printf("Création de la branche "YELLOW"%s"RESET"\n", new_branch_name);
     createBranch(new_branch_name);
 
-    printf("Est ce que la branche "YELLOW"%s"RESET "existe ? "RED"%s"RESET"\n", new_branch_name, TO_BOOL(branchExists(new_branch_name)));
+    printf("Est ce que la branche "YELLOW"%s"RESET " existe ? %s\n", new_branch_name, TO_BOOL(branchExists(new_branch_name)));
 
     const char *current_branch_name = getCurrentBranch();
     printf("La branche courrante est "YELLOW "%s" RESET "\n", current_branch_name);
@@ -224,7 +224,7 @@ void test_commit(){
         NULL
     };
     
-    for(int i = 0; i < sizeof_a(test_keys); i++){
+    for(size_t i = 0; i < sizeof_a(test_keys); i++){
         printf("commit["YELLOW"\"%s\""RESET"] = "GREEN"%s"RESET"\n", test_keys[i], commitGet(commit, test_keys[i]));
     }
 

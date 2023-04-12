@@ -80,12 +80,18 @@ void printBranch(const char *branch)
     else printf("%s\n", commit_hash);
 
     if(prev){
-      commit_hash = prev;
+      commit_hash = strdup(prev);
       free(prev);
       path = commitPath(commit_hash);
 
+      if(commit_hash) free(commit_hash);
       freeCommit(c);
       c = ftc(path);
+      if (c == NULL){
+        err_log(E_ERR, "ftc a renvoyé null..");
+        if(path) free(path);
+        break;
+      }
 
       if(path) free(path);
     }

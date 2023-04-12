@@ -1,7 +1,9 @@
 #ifndef TOOL
 #define TOOL
 
-#define TO_BOOL(NUM) ((NUM) ? "false" : "true")
+#include "../const.h"
+
+#define TO_BOOL(NUM) ((NUM) ? RED"false"RESET : GREEN"true"RESET)
 
 #define sizeof_a(array) (sizeof((array)) / sizeof((array[0])))
 
@@ -17,6 +19,6 @@ void init_tool();
  * @param len Longueur de la chaine charactère 
  * @return char* La chaine de charactère générée
  */
-char *random_str(int len);
+char *random_str(unsigned long len);
 
 #endif
