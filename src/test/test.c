@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <malloc.h>
 #include <sys/stat.h>
 
 #include "../include/const.h"
@@ -28,14 +29,24 @@ void init_test(){
 void test_hash(){
     printf("=== DEBUT DU TEST DES HASH ===\n");
   // TEST HACHAGE
-    static const char* filename = "Makefile";
+    static const char filename[] = "Makefile";
     
     printf("Hash de %s : ", filename);
     char *hash = sha256file(filename);
+    if(hash == NULL){
+        printf(RED "sha256file(\"%s\") renvoie null...\n" RESET, filename);
+        return;
+    }
     printf("%s%s%s\n",GREEN, hash, RESET);
 
     printf("Conversion en chemin..");
-    printf("Résultat : " YELLOW "%s" RESET "\n", hashToPath(hash));
+    char *path = hashToPath(hash);
+    if(path == NULL){
+        printf(RED "hashToPath(\"%s\") renvoie null...\n" RESET, hash);
+        return;
+    }
+
+    printf("Résultat : " YELLOW "%s" RESET "\n", path);
 
     const char text[] = "burger";
 
@@ -44,6 +55,9 @@ void test_hash(){
 
 
     printf("=== FIN DU TEST DES FONCTIONS DE HACHAGE ===\n");
+    
+    free(hash);
+    free(path);
 }
 
 void test_list(){

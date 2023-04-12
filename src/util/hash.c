@@ -30,8 +30,7 @@ char* sha256file(const char* file){
     }
     
     char* hash = malloc(sizeof(char) * 65);
-
-    memset(hash, 0, 65);
+    memset(hash, 0, 65 * sizeof(char));
 
     fgets(hash, 64, f);
     hash[64] = '\0';

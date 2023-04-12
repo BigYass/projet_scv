@@ -115,12 +115,14 @@ List *branchList(const char *branch)
   char *path = commitPath(hash);
   if(path == NULL){
     err_logf(E_ERR, "commitPath(\"%s\") a renvoye NULL", hash);
+    free(hash);
     return NULL;
   }
 
   Commit *c = ftc(path);
   if(c == NULL){
     err_logf(E_ERR, "La conversion de (\"%s\") a échoué", path);
+    free(hash); free(path);
     return NULL;
   }
 
@@ -134,7 +136,6 @@ List *branchList(const char *branch)
       hash = strdup(prev); // On duplique pour facilité la libération de mémoire
       path = commitPath(hash);
 
-      free(prev);
       freeCommit(c);
       c = ftc(path);
     }

@@ -61,7 +61,7 @@ void myGitCommit(const char *branch_name, const char *message)
   WorkTree *wt = ftwt(".add");
 
   if(wt == NULL){
-    err_log(E_WARN, "Il faut crée le fichier .add");
+    err_log(E_ERR, "Il faut crée le fichier .add");
     return;
   }
 
