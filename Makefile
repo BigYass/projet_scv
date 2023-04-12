@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -ggdb
 
-# commit 2
+# master
 
 SRC = src
 BIN = bin

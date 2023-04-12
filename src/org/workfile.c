@@ -296,7 +296,7 @@ char *saveWorkTree(WorkTree *wt, char *path)
     memset(full_path, 0, sizeof(char) * (strlen(path) + strlen(wt->tab[i].name) + 2));
 
     strcat(full_path, path);
-    strcat(full_path, "/");
+    if(!(wt->tab[i].name[0] && wt->tab[i].name[0] == '/')) strcat(full_path, "/");
     strcat(full_path, wt->tab[i].name);
 
     if (file_exists(full_path))
@@ -372,7 +372,7 @@ WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts){
   // Recherche des conflits
   if(wt1) for(int i = 0; i < wt1->n; i++)
     for(int j = 0; j < wt2->n; j++)
-      if(!strcmp(wt1->tab[i].name, wt2->tab[i].name))
+      if(!strcmp(wt1->tab[i].name, wt2->tab[j].name))
         insertFirst(*conflicts, buildCell(wt1->tab[i].name));
   
 
@@ -392,14 +392,15 @@ WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts){
 }
 
 List* merge(const char* remote_branch, const char* message){
-  char *current_branch = getRef(getCurrentBranch());
+  char *current_branch_name = getCurrentBranch();
+  char *current_branch = getRef(current_branch_name);
 
   char *current_commit_path = commitPath(current_branch);
   if(current_commit_path == NULL){
     err_logf(E_ERR, "Impossible de trouver le chemin du fichier correspondant à la branche %s..", current_branch);
   }
   
-  char *remote_commit_path = commitPath(remote_branch);
+  char *remote_commit_path = commitPath(getRef(remote_branch));
   if(current_commit_path == NULL){
     err_logf(E_ERR, "Impossible de trouver le chemin du fichier correspondant à la branche %s..", remote_branch);
   }
@@ -407,11 +408,13 @@ List* merge(const char* remote_branch, const char* message){
   Commit *current_commit = ftc(current_commit_path);
   if(current_commit == NULL){
     err_logf(E_ERR, "Conversion vers commit du fichier %s impossible..", current_commit_path);
+    return NULL;
   }
 
   Commit *remote_commit = ftc(remote_commit_path);
   if(current_commit == NULL){
     err_logf(E_ERR, "Conversion vers commit du fichier %s impossible..", remote_commit_path);
+    return NULL;
   }
 
   char *current_wt_hash = commitGet(current_commit, "tree");
@@ -456,7 +459,7 @@ List* merge(const char* remote_branch, const char* message){
   
   const char* commit_hash = blobCommit(merged_commit);
 
-  createUpdateRef(current_branch, commit_hash);
+  createUpdateRef(current_branch_name, commit_hash);
   createUpdateRef("HEAD", commit_hash);
 
   deleteRef(remote_branch);
@@ -464,12 +467,16 @@ List* merge(const char* remote_branch, const char* message){
   restoreCommit(commit_hash);
 
   free(current_branch);
+  free(current_branch_name);
   free(current_commit_path);
   free(remote_commit_path);
+
   freeCommit(current_commit);
   freeCommit(remote_commit);
+
   free(current_wt_hash);
   free(remote_wt_hash);
+
   freeWorkTree(current_wt);
   freeWorkTree(remote_wt);
   freeList(conflicts);
@@ -485,20 +492,74 @@ void createDeletionCommit(const char *branch, List *conflicts, const char* messa
   char *current_branch = getCurrentBranch();
   myGitCheckoutBranch(branch);
 
-  WorkTree *wt = ftwt(commitGet(ftc(commitPath(getRef(branch))), "tree"));
+  char *branch_hash = getRef(branch);
+  if(branch_hash == NULL){
+    err_logf(E_ERR, "Bruh, récupéré la référence %s semble impossible...", branch);
+    free(current_branch);
+    return;
+  }
+
+  char *commit_path = commitPath(branch_hash);
+  if(commit_path == NULL){
+    err_logf(E_ERR, "Transformer le hash %s en chemin a renvoyé null", branch_hash);
+    free(branch_hash);  
+    free(current_branch);
+    return;
+  }
+  free(branch_hash);
+
+
+  Commit *commit = ftc(commit_path);
+  if(commit == NULL){
+    err_logf(E_ERR, "La conversion du fichier %s en commit a renvoyé null", commit_path);
+    free(commit_path);
+    free(current_branch);
+    return;
+  }
+  free(commit_path);
+
+  char *wt_hash = commitGet(commit, "tree");
+  free(commit);
+  if(wt_hash == NULL){
+    err_log(E_ERR, "Bruh, commit[\"tree\"] = null");
+    free(current_branch);
+    return;
+  }
+
+  char *wt_path = workTreePath(wt_hash);
+  if(wt_path == NULL){
+    err_logf(E_ERR, "La conversion de %s en chemin d'accès a échoué..", wt_hash);
+    free(wt_hash);
+    free(current_branch);
+    return;
+  }
+  free(wt_hash);
+  
+  WorkTree *wt = ftwt(wt_path);
+  if(wt == NULL){
+    err_logf(E_ERR, "ftwt a renvoyé null pour le fichier %s", wt_path);
+    free(current_branch);
+    free(wt_path);
+    return;
+  }
+  free(wt_path);
+    
 
   remove(".add");
+
+  createFile(".add");
 
   for(int i = 0; i < wt->n; i++)
     if(searchList(conflicts, wt->tab[i].name))
       myGitAdd(wt->tab[i].name);
+
+  freeWorkTree(wt);
 
   myGitCommit(branch, message);
 
   myGitCheckoutBranch(current_branch);
 
   free(current_branch);
-  freeWorkTree(wt);
 }
 
 

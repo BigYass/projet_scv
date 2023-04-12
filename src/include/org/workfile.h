@@ -189,6 +189,13 @@ WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts);
  */
 List* merge(const char* remote_branch, const char* message);
 
+/**
+ * @brief Crée un commit de supression (en gros ca supprime les conflits pour pouvoir merge trkl)
+ * 
+ * @param branch La branche dont on doit supprimer les conflits
+ * @param conflicts La liste des fichiers en conflits
+ * @param message Le message (optionnel)
+ */
 void createDeletionCommit(const char *branch, List *conflicts, const char* message);
 
 #endif

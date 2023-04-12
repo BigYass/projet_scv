@@ -7,8 +7,8 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/myGit",
       "args": [
-        "checkout-commit",
-        "011a32ae132205078abd5b38b947bc2d34a56eec92700ca41d0f4c7106d5a57"
+        "commit",
+        "test"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

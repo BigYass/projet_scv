@@ -33,22 +33,20 @@ int main(int argc, char *argv[])
     if(argc == 1){
         printf("Utilisation : \n");
         printf(YELLOW "%s init :"RESET" Initialise le repertoire de references.\n", argv[0]);
-        printf(YELLOW "%s list-refs :"RESET" Affiche toutes les references existantes.\n", argv[0]);
+        printf(RED "%s list-refs :"RESET" Affiche toutes les references existantes.\n", argv[0]);
         printf(YELLOW "%s create-ref <name> <hash> :"RESET" Cree la reference <name> qui pointe vers le commit correspondant au hash donne.\n", argv[0]);
-        printf(YELLOW "%s delete-ref <name> :"RESET" Supprime la reference name.\n", argv[0]);
+        printf(RED "%s delete-ref <name> :"RESET" Supprime la reference name.\n", argv[0]);
         printf(YELLOW "%s add <elem> [<elem2> <elem3> ...] :"RESET" Ajoute un ou plusieurs fichiers/repertoires a la zone de preparation (pour faire partie du prochain commit).\n", argv[0]);
-        printf(YELLOW "%s list-add :"RESET" Affiche le contenu de la zone de preparation.\n", argv[0]);
+        printf(RED "%s list-add :"RESET" Affiche le contenu de la zone de preparation.\n", argv[0]);
         printf(YELLOW "%s clear-add :"RESET" Vide la zone de preparation.\n", argv[0]);
-        printf(YELLOW "%s commit <branch-name> [-m <message>] :"RESET" Effectue un commit sur une branche, avec ou sans message descriptif.\n", argv[0]);
+        printf(RED "%s commit <branch-name> [-m <message>] :"RESET" Effectue un commit sur une branche, avec ou sans message descriptif.\n", argv[0]);
         printf(YELLOW "%s get-current-branch :"RESET" Affiche le nom de la branche courrante\n", argv[0]);
-        printf(YELLOW "%s branch <branch-name>:"RESET" Crée la branche de nom <branch-name>\n", argv[0]);
+        printf(RED "%s branch <branch-name>:"RESET" Crée la branche de nom <branch-name>\n", argv[0]);
         printf(YELLOW "%s branch-print <branch-name>:"RESET" Affiche le hash de tous les commits de la branche\n", argv[0]);
-        printf(YELLOW "%s checkout-branch <branch-name>:"RESET" Réalise un déplacement de branche\n", argv[0]);
+        printf(RED "%s checkout-branch <branch-name>:"RESET" Réalise un déplacement de branche\n", argv[0]);
         printf(YELLOW "%s checkout-commit <pattern>:"RESET" Réalise un déplacement de commit qui commence par <pattern>\n", argv[0]);
-        
-
-        printf(YELLOW "%s test :"RESET" Lance des tests sur les fonctionnalites.\n", argv[0]);
-
+        printf(RED "%s merge <branch> [message]:"RESET" Fusionne la branche courrante et <branch>\n", argv[0]);
+        printf(YELLOW "%s test [<module1> <module2> ...] :"RESET" Lance des tests sur les fonctionnalites des modules spécifique (de tout les modules si non spécifiés).\n", argv[0]); 
         return 0;
     }
 
@@ -199,9 +197,12 @@ int main(int argc, char *argv[])
             printf("Déplacement de commit vers " YELLOW "%s" RESET "\n", argv[2]);
         }
     }
-    else if(!strcmp(argv[1], "test")){
+    else if(!strcmp(argv[1], "merge")){
         if(argc < 3){
             printf(RED "Erreur de syntax, " RESET "Utilisation : %s merge <branch> [message]\n", argv[0]);
+        }
+        else if(!branchExists(argv[2])){
+            printf(RED" La branche " YELLOW "%s" RED " n'existe pas..\n" RESET, argv[2]); 
         }
         else {
             char *current_branch = getCurrentBranch();
@@ -223,7 +224,7 @@ int main(int argc, char *argv[])
             List *conflitcs = merge(argv[2], strlen(msg) ? msg : NULL);
 
             if(conflitcs == NULL){
-                printf("Fusion de la branche %s et %s accompli!", current_branch, argv[2]);
+                printf("Fusion de la branche %s et %s accompli!\n", current_branch, argv[2]);
             }
             else {
                 printf(RED "Impossible de fusionner, conflit :\n" RESET);
@@ -311,7 +312,7 @@ int main(int argc, char *argv[])
                 }
 
                 case 4:
-                    printf("Fusion anullé...\n");
+                    printf("Fusion annullé...\n");
                     break;
                 
                 default:
@@ -323,13 +324,38 @@ int main(int argc, char *argv[])
         }
     }
     else if(!strcmp(argv[1], "test")){
-        //TODO : Rajouter les fonctions de tests
+        Commit* modules = NULL;
+        if(argc > 2){
+            modules = initCommit();
+            for(int i = 0; i < argc; i++){
+                commitSet(modules, argv[i], "true");
+            }
+        }
+        init_test();
+
+        if(modules == NULL || commitGet(modules, "hash"))
+            test_hash();
+        if(modules == NULL || commitGet(modules, "list"))
+            test_list();
+        if(modules == NULL || commitGet(modules, "file"))
+            test_files();
+        if(modules == NULL || commitGet(modules, "worktree"))
+            test_work_file();
+        if(modules == NULL || commitGet(modules, "branch"))
+            test_branch();
+        if(modules == NULL || commitGet(modules, "commit"))
+            test_commit();
+        if(modules == NULL || commitGet(modules, "git"))
+            test_my_git();
+        if(modules == NULL || commitGet(modules, "refs"))
+            test_refs();
+
+        freeCommit(modules);
     }
     else {
         printf("Commande %s inconnue, arrêt du programme...\n", argv[1]);
         return 0;
     }
-    
 
     // FIN DU PROGRAMME
     puts(GREEN "Fin du programme..." RESET);

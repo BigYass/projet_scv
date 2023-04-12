@@ -32,14 +32,14 @@ void createBranch(const char *branch);
 char *getCurrentBranch();
 
 /**
- * @brief Parcour une branche et affiche le hash et le message descriptif de chacun des commits
+ * @brief Affiche le hash de tout les commit d'une branche
  * 
  * @param branch Nom de la branche
  */
 void printBranch(const char *branch);
 
 /**
- * @brief 
+ * @brief Construit et retroune la liste contenant le hash de tout les commit d'une branche
  * 
  * @param branch 
  * @return List* 

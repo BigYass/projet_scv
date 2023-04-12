@@ -38,6 +38,11 @@ void freeKeyVal(kvp *kv)
 
 void freeCommit(Commit *c)
 {
+  if(c == NULL){
+    err_log(E_WARN, "Tentative de libéré un commit null..");
+    return;
+  }
+
   for(int i = 0; i < c->size; i++)
     if(c->T[i]) freeKeyVal(c->T[i]);
 
@@ -100,7 +105,7 @@ void commitSet(Commit *c, const char *key, const char *value)
     return;
   }
 
-  int hash = sdbm((unsigned char*)key) % c->size;
+  unsigned long hash = sdbm((unsigned char*)key) % c->size;
   while(c->T[hash]){
     hash = (hash + 1) % c->size;
   }
@@ -119,11 +124,11 @@ Commit *createCommit(const char *hash)
 
 char *commitGet(Commit *c, const char *key)
 {
-  int hash = sdbm((unsigned char*)key) % c->size;
+  unsigned long hash = sdbm((unsigned char*)key) % c->size;
   
   for(int i = 0; i < c->n && c->T[(hash + i) % c->size]; i++)
     if(!strcmp(c->T[(hash + i) % c->size]->key, key))
-      return c->T[(hash + i) % c->size]->value;
+      return strdup(c->T[(hash + i) % c->size]->value);
 
   err_logf(E_OK, "Tentative d'accès à une clé non existente %s dans commit 0x%x", key, c);
   return NULL;
@@ -282,6 +287,7 @@ void restoreCommit(const char *hash)
   
   restoreWorkTree(wt, ".");
 
+  free(wt_hash);
   free(path);
   free(tree_hash);
   freeCommit(c);

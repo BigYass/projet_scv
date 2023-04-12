@@ -16,6 +16,7 @@
 
 void createFile(const char *file)
 {
+    // On crée le fichier en utilisant fopen
     if(file_exists(file)){
         err_logf(E_WARN, "Le fichier %s existe déjà", file);
         return;
@@ -27,12 +28,16 @@ void createFile(const char *file)
         return;
     }
 
+    // Fermeture du handle
     fclose(f);
 }
 
 void ltof(List *L, const char *path)
 {
+    // On convertit une liste en chaine dans s
     char *s = ltos(L);
+
+    // On le stocke dans un fichier
     FILE *f = fopen(path, "w");
 
     if(f == NULL){
@@ -42,12 +47,15 @@ void ltof(List *L, const char *path)
     }
 
     fputs(s, f);
+
+    // Fin de fonction
     fclose(f);
     free(s);
 }
 
 List *ftol(const char *path)
 {
+    // On lit le fichier
     
     FILE *f = fopen(path, "r");
 
@@ -73,6 +81,8 @@ List *ftol(const char *path)
     }
     fclose(f);
 
+    // La chaine est récupéré, conversion en liste
+
     List *l = stol(s);
 
     return l;
@@ -80,6 +90,7 @@ List *ftol(const char *path)
 
 List *listdir(const char *root_dir)
 {
+    //Optention du handle sur le dossier
     DIR *dp = opendir(root_dir);
     struct dirent *ep;
 
@@ -88,6 +99,7 @@ List *listdir(const char *root_dir)
     if (dp != NULL)
     {
         l = initList();
+        // Tant qu'on trouve des fichier
         while ((ep = readdir(dp)) != NULL)
         {
             insertFirst(l, buildCell(ep->d_name));
@@ -114,7 +126,7 @@ void cp(const char *to, const char *from)
     char *cursor = strdup(to);
     char *file = strrchr(cursor, '/');
 
-    if(file) file[0] = '\0'; // Séparation du nom du fichier des dossiers parents
+    if(file) file[0] = '\0';
 
     char *token = strtok(cursor, "/");
 
@@ -126,10 +138,10 @@ void cp(const char *to, const char *from)
 
         struct stat sb;
         if (stat(current_dir, &sb) == 0) { // Un dossier ou un fichier du meme nom existe
-            err_logf(E_WARN, "Le nom '%s' est déjà pris par un fichier ou un dossier. Code : %d\n", current_dir, errno);
+            err_logf(E_OK, "Le nom '%s' est déjà pris par un fichier ou un dossier. Code : %d", current_dir, errno);
         
         } else if (mkdir(current_dir, 0700) != 0) { // créer le dossier avec les droits maximums
-            err_logf(E_ERR, "Impossible de créer le dossier '%s'\n", current_dir);
+            err_logf(E_ERR, "Impossible de créer le dossier '%s'", current_dir);
             free(cursor);
             return;
         }
@@ -191,7 +203,7 @@ char *filePath(const char *hash){
 
 void blobFile(const char *file)
 {
-    char *path = filePath(file);
+    char *path = filePath(sha256file(file));
 
     cp(path, file);
 

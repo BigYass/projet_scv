@@ -13,7 +13,7 @@
 
 void myGitAdd(const char *file)
 {
-  WorkTree *wt;
+  WorkTree *wt = NULL;
   if(!file_exists(".add")){
     createFile(".add");
     wt = initWorkTree();

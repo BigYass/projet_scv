@@ -29,7 +29,12 @@
     "sstream": "c",
     "strstream": "c",
     "refs.h": "c",
-    "my_git.h": "c"
+    "my_git.h": "c",
+    "utility": "c",
+    "test.h": "c",
+    "array": "c",
+    "__tuple": "c",
+    "stdlib.h": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

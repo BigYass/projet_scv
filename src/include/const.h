@@ -18,7 +18,7 @@
  * 3 : Tout
  * 
  */
-#define DEBUG 3
+#define DEBUG 2
 
 #define TMP_DIRECTORY ".tmp"
 
