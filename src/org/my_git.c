@@ -76,7 +76,7 @@ void myGitCommit(const char *branch_name, const char *message)
     commitSet(c, "predecessor", last_hash);
   }
   if(message != NULL){
-    commitSet(c, "message", message);
+    commitSet(c, "message", message); // commit["message"] = message;
   }
   free(last_hash);
 

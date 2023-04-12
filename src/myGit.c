@@ -18,6 +18,7 @@
 
 #include "include/util/file.h"
 
+//test
 
 void create_tmp_file(){
     mkdir(TMP_DIRECTORY, 0700);
@@ -151,7 +152,9 @@ int main(int argc, char *argv[])
         printf("Le commit " YELLOW "\"%s\"" RESET " a été enregistré dans la branche " YELLOW "%s" RESET "\n", msg, name);
     }
     else if(!strcmp(argv[1], "get-current-branch")){
-        printf("La branche courrante est "YELLOW"%s"RESET"\n", getCurrentBranch());
+        char * current_branch = getCurrentBranch();
+        printf("La branche courrante est "YELLOW"%s"RESET"\n", current_branch);
+        free(current_branch);
     }
     else if(!strcmp(argv[1], "branch")){
         if(argc < 3){
