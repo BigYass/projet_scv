@@ -298,19 +298,34 @@ void test_branch(){
 
     printf("Est ce que la branche "YELLOW"%s"RESET " existe ? %s\n", new_branch_name, TO_BOOL(branchExists(new_branch_name)));
 
-    const char *current_branch_name = getCurrentBranch();
+    char *current_branch_name = getCurrentBranch();
     printf("La branche courrante est "YELLOW "%s" RESET "\n", current_branch_name);
 
     printf("Affichage des commits de " YELLOW "%s" RESET " :\n", current_branch_name);
     printBranch(current_branch_name);
 
     printf("List de " YELLOW "%s" RESET ": \n", current_branch_name);
-    printf("%s\n", ltos(branchList(current_branch_name)));
+
+    List *l = branchList(current_branch_name);
+
+    char *s = ltos(l);
+    printf("%s\n", s);
 
     printf("List de tout les commits :\n");
-    printf("%s\n", ltos(getAllCommits()));
+
+
+    freeList(l);
+    l = getAllCommits();
+
+    free(s);
+    s = ltos(l);
+    printf("%s\n", s);
 
     printf("=== FIN DU TEST DES BRANCHES ===\n");
+
+    free(current_branch_name);
+    freeList(l);
+    free(s);
 }
 
 void test_commit(){
@@ -319,25 +334,33 @@ void test_commit(){
     printf("Création d'une paire (\"cle\", \"valeur\")");
     kvp* pair = createKeyVal("cle", "valeur");
 
+
     printf("Conversion de la paire en chaine\n");
     char *pair_string = kvts(pair);
     printf("Résultat \"" YELLOW "%s" RESET "\"\n", pair_string);
 
     printf("Conversion en clé à nouveau..\n");
     kvp* pair_copy = stkv(pair_string);
-    printf("Résultat \"" YELLOW "%s" RESET "\"\n", kvts(pair_copy));
+
+    free(pair_string);
+    pair_string = kvts(pair_copy);
+    printf("Résultat \"" YELLOW "%s" RESET "\"\n", pair_string);
+
+
 
     // Teste des commits
     printf("Création d'un commit..\n");
     Commit *commit = initCommit();
-    printf("Résultat (conversion) : \n%s\n", cts(commit));
 
     printf("Ajout de la paire " YELLOW "%s" RESET " dans le commit", pair_string);
     commitSet(commit, pair->key, pair->value);
 
     kvp *test_pair = createKeyVal("test", "valide"); 
 
-    printf("Ajout de la paire " YELLOW "%s" RESET " dans le commit", kvts(test_pair));
+    free(pair_string);
+    pair_string = kvts(test_pair);
+    printf("Ajout de la paire " YELLOW "%s" RESET " dans le commit", pair_string);
+    
     commitSet(commit, test_pair->key, test_pair->value);
 
     printf("Retrait de valeurs : \n");
@@ -351,7 +374,9 @@ void test_commit(){
     };
     
     for(size_t i = 0; i < sizeof_a(test_keys); i++){
-        printf("commit["YELLOW"\"%s\""RESET"] = "GREEN"%s"RESET"\n", test_keys[i], commitGet(commit, test_keys[i]));
+        char *val = commitGet(commit, test_keys[i]);
+        printf("commit["YELLOW"\"%s\""RESET"] = "GREEN"%s"RESET"\n", test_keys[i], val);
+        if(val) free(val);
     }
 
     printf("Conversion du commit en chaine de charactère..\n");
@@ -361,7 +386,10 @@ void test_commit(){
 
     Commit *commit_copy = stc(commit_string);
     printf("Conversion inverse..\n");
-    printf("Résultat : "YELLOW"%s"RESET, cts(commit_copy));
+
+    free(commit_string);
+    commit_string = cts(commit_copy);
+    printf("Résultat : "YELLOW"%s"RESET, commit_string);
 
     const char file_name[] = TEST_DIRECTORY "/test_commit.commit";
 
@@ -371,19 +399,30 @@ void test_commit(){
     printf("Récupération du commit stocké dans " YELLOW "%s" RESET "..\n", file_name);
     Commit * commit_copy_2 = ftc(file_name);
 
-    printf("Résultat : \n%s\n", cts(commit_copy_2));
+    free(commit_string);
+    commit_string = cts(commit_copy_2);
+
+    printf("Résultat : \n%s\n", commit_string);
 
     printf("Création d'un instantanné du commit orginal\n");
-    blobCommit(commit);
+    free(blobCommit(commit));
 
-    // TODO : free
     printf("=== FIN DU TEST DES COMMITS ===\n");
+
+    freeKeyVal(pair);
+    free(pair_string);
+    freeKeyVal(pair_copy);
+    freeKeyVal(test_pair);
+    freeCommit(commit);
+    freeCommit(commit_copy);
+    free(commit_string);
+    freeCommit(commit_copy_2);
 }
 
 void test_my_git(){
     printf("=== DEBUT DU TEST DE MY_GIT ===\n");
     // On crée un fichier de test
-    const char test_file_name[] = TEST_DIRECTORY "/test.txt";
+    const char test_file_name[] = "test.txt";
 
     if(!file_exists(test_file_name)){
         printf("Création du fichier %s\n", test_file_name);
@@ -419,16 +458,27 @@ void test_refs(){
     const char ref_name[] = "test_ref";
 
     int content_len = 7;
-    const char *content = random_str(content_len);
+    char *content = random_str(content_len);
 
     printf("Création ou mise à jour de la référence %s avec %s", ref_name, content);
     createUpdateRef(ref_name, content);
 
-    printf("Contenu de la référence : %s", getRef(ref_name));
+
+    char *s = getRef(ref_name);
+    printf("Contenu de la référence : %s", s);
 
     printf("Supression de la référence %s..", ref_name);
     deleteRef(ref_name);
 
+    free(s);
+    free(content);
+
     // TODO : free
     printf("=== FIN DU TEST DES REFERENCES ===\n");
 }
+
+
+
+
+
+

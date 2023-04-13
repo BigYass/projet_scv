@@ -32,7 +32,7 @@ void myGitAdd(const char *file)
   else {
     err_logf(E_ERR, "Bruh, le fichier %s n'existe pas...", file);
   }
-  free(wt);
+  freeWorkTree(wt);
 }
 
 void myGitCommit(const char *branch_name, const char *message)
@@ -86,5 +86,6 @@ void myGitCommit(const char *branch_name, const char *message)
 
   free(commit_hash);
   freeCommit(c);
+  freeWorkTree(wt);
   
 }

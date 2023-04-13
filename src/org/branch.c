@@ -71,7 +71,6 @@ void printBranch(const char *branch)
 
   while(c != NULL){
     char *msg = commitGet(c, "message");
-    char *prev = commitGet(c, "predecessor");
     if(msg) {
       printf("%s => \"%s\"\n", commit_hash, msg);
       free(msg);
@@ -79,27 +78,19 @@ void printBranch(const char *branch)
 
     else printf("%s\n", commit_hash);
 
-    if(prev){
-      commit_hash = strdup(prev);
-      free(prev);
-      path = commitPath(commit_hash);
+    
+    if(commit_hash) free(commit_hash);
+    commit_hash = commitGet(c, "predecessor");
+    freeCommit(c);
 
-      if(commit_hash) free(commit_hash);
-      freeCommit(c);
-      c = ftc(path);
-      if (c == NULL){
-        err_log(E_ERR, "ftc a renvoyé null..");
-        if(path) free(path);
-        break;
-      }
+    path = commitPath(commit_hash);
 
-      if(path) free(path);
-    }
-    else {
-      freeCommit(c);
-      c = NULL;
-    }
+    c = ftc(path);
+
+    if(path) free(path);
   }
+
+  if(commit_hash) free(commit_hash);
 }
 
 List *branchList(const char *branch)
@@ -128,24 +119,18 @@ List *branchList(const char *branch)
 
   while(c != NULL){
     insertFirst(L, buildCell(hash));
-    char *prev = commitGet(c, "predecessor");
 
     if(path) free(path);
     if(hash) free(hash);
-    if(prev){
-      hash = strdup(prev); // On duplique pour facilité la libération de mémoire
-      path = commitPath(hash);
+    hash = commitGet(c, "predecessor"); // On duplique pour facilité la libération de mémoire
+    path = commitPath(hash);
 
-      freeCommit(c);
-      c = ftc(path);
-    }
-    else {
-      freeCommit(c);
-      c = NULL;
-    }
+    freeCommit(c);
+    c = ftc(path);
   }
 
   if(path) free(path);
+  if(hash) free(hash);
 
   return L;
 }

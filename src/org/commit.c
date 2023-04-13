@@ -14,10 +14,15 @@
 
 kvp *createKeyVal(const char *key, const char *val)
 {
+  if(key == NULL || val == NULL){
+    err_log(E_WARN, "Tentative de création d'une paire avec paramètre null..");
+    return NULL;
+  }
+
   kvp* k = malloc(sizeof(kvp));
 
-  k->key = (char *) strdup(key);
-  k->value = (char *) strdup(val);
+  k->key = strdup(key);
+  k->value = strdup(val);
 
   return k;
 }
@@ -32,8 +37,6 @@ void freeKeyVal(kvp *kv)
   if(kv->key) free(kv->key);
   if(kv->value) free(kv->value);
   free(kv);
-
-  kv = NULL;
 }
 
 void freeCommit(Commit *c)
@@ -48,8 +51,6 @@ void freeCommit(Commit *c)
 
   free(c->T);
   free(c);
-
-  c = NULL;
 }
 
 char *kvts(kvp *k)
@@ -125,6 +126,10 @@ Commit *createCommit(const char *hash)
 
 char *commitGet(Commit *c, const char *key)
 {
+  if(key == NULL){
+    err_log(E_WARN, "Tentative de recherche d'une clé null dans un commit..");
+    return NULL;
+  }
   unsigned long hash = sdbm((unsigned char*)key) % c->size;
   
   for(int i = 0; i < c->n && c->T[(hash + i) % c->size]; i++)
@@ -143,8 +148,11 @@ char *cts(Commit *c)
 
   for(int i = 0; i < c->size; i++){
     if(c->T[i] != NULL){
-      strcat(str, kvts(c->T[i]));
+      char *s = kvts(c->T[i]);
+      strcat(str, s);
       strcat(str, "\n");
+
+      free(s);
     }
   }
 
@@ -185,6 +193,11 @@ void ctf(Commit *c, const char *file)
 
 Commit *ftc(const char *file)
 {
+  if(file == NULL){
+    err_log(E_WARN, "Tentative de convertir un fichier avec un nom null..");
+    return NULL;
+  }
+
   FILE *f = fopen(file, "r");
 
   if(f == NULL){
@@ -206,6 +219,7 @@ Commit *ftc(const char *file)
   }
 
   Commit *c = stc(s);
+  fclose(f);
   free(s);
   return c;
 }
@@ -250,6 +264,7 @@ char *blobCommit(Commit *c)
 
   cp(full_path, fname);
 
+  free(full_path);
   remove(fname);
   return hash;
 }
@@ -291,6 +306,7 @@ void restoreCommit(const char *hash)
   free(wt_hash);
   free(path);
   free(tree_hash);
+  freeWorkTree(wt);
   freeCommit(c);
   
 }

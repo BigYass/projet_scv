@@ -58,8 +58,8 @@ void freeWorkFile(WorkFile *wf)
     err_log(E_WARN, "Tentative de libéré un WorkFile null..");
     return;
   }
-  if(wf->hash != NULL) free(wf->hash);
-  if(wf->name != NULL) free(wf->name);
+  if(wf->hash) free(wf->hash);
+  if(wf->name) free(wf->name);
   free(wf);
 }
 
@@ -102,7 +102,7 @@ void freeWorkTree(WorkTree *wt){
     err_log(E_WARN, "Tentative de libéré un WorkTree null..");
     return;
   }
-  for(int i = 0; i < wt->size; i++){
+  for(int i = 0; i < wt->n; i++){
     if(wt->tab[i].name) free(wt->tab[i].name);
     if(wt->tab[i].hash) free(wt->tab[i].hash);
   }
@@ -130,11 +130,12 @@ int appendWorkTree(WorkTree *wt, const char *name, const char *hash, int mode)
     err_logf(E_WARN, "%s est déjà existant, ajout impossible", name);
     return -1;
   }
-  else if (wt->size <= wt->n)
+  if (wt->size <= wt->n)
   {
     err_log(E_WARN, "Ajout impossible, le WortTree est plein");
     return -2;
   }
+  
   wt->tab[wt->n].mode = mode;
   wt->tab[wt->n].name = strdup(name);
   wt->tab[wt->n++].hash = hash ? strdup(hash) : NULL;
@@ -230,6 +231,8 @@ WorkTree *ftwt(const char *file)
     strcat(s, buf);
   }
 
+  fclose(f);
+
   WorkTree *wt = stwt(s);
   free(s);
   return wt;
@@ -313,8 +316,13 @@ char *saveWorkTree(WorkTree *wt, char *path)
     else
     {
       WorkTree *wt_rep = initWorkTree();
-      List *L = listdir(full_path);
-      for (Cell *cursor = *L; cursor; cursor = cursor->next)
+      List *L = listdir(full_path); 
+      if(L == NULL){
+        err_logf(E_ERR, "listdir(\"%s\") a renvoyé null", full_path);
+        return NULL;
+      }
+
+      for (Cell *cursor = *L; cursor != NULL; cursor = cursor->next)
       {
         if (ctos(cursor)[0] == '.')
           continue;
@@ -323,7 +331,12 @@ char *saveWorkTree(WorkTree *wt, char *path)
 
       wt->tab[i].hash = saveWorkTree(wt_rep, full_path);
       wt->tab[i].mode = getChmod(full_path);
+
+      freeWorkTree(wt_rep);
+      freeList(L);
     }
+  
+    free(full_path);
   }
   return blobWorkTree(wt);
 }
@@ -405,7 +418,9 @@ List* merge(const char* remote_branch, const char* message){
     err_logf(E_ERR, "Impossible de trouver le chemin du fichier correspondant à la branche %s..", current_branch);
   }
   
-  char *remote_commit_path = commitPath(getRef(remote_branch));
+  char *remote_branch_ref = getRef(remote_branch);
+  char *remote_commit_path = commitPath(remote_branch_ref);
+  free(remote_branch_ref);
   if(current_commit_path == NULL){
     err_logf(E_ERR, "Impossible de trouver le chemin du fichier correspondant à la branche %s..", remote_branch);
   }
@@ -432,12 +447,15 @@ List* merge(const char* remote_branch, const char* message){
     err_logf(E_ERR, "Impossible de trouver tree dans le commit %s", remote_commit_path);
   }
 
-  WorkTree *current_wt = ftwt(workTreePath(current_wt_hash));
+  char *current_wt_path = workTreePath(current_wt_hash);
+  WorkTree *current_wt = ftwt(current_wt_path);
   if(current_wt == NULL){
     err_logf(E_ERR, "Conversion du worktree %s", current_wt);
   }
 
-  WorkTree *remote_wt = ftwt(workTreePath(remote_wt_hash));
+
+  char *remote_wt_path = workTreePath(remote_wt_hash);
+  WorkTree *remote_wt = ftwt(remote_wt_path);
   if(current_wt == NULL){
     err_logf(E_ERR, "Conversion du worktree %s", current_wt);
   }
@@ -446,20 +464,44 @@ List* merge(const char* remote_branch, const char* message){
 
   WorkTree* merged_wt = mergeWorkTrees(current_wt, remote_wt, &conflicts);
 
+  free(current_wt_path);
+  free(remote_wt_path);
+  
+  free(current_branch);
+  free(current_commit_path);
+  free(remote_commit_path);
+
+  freeCommit(current_commit);
+  freeCommit(remote_commit);
+
+  freeWorkTree(current_wt);
+  freeWorkTree(remote_wt);
+  freeList(conflicts);
+
+
   if(sizeList(conflicts) > 0){
     err_logf(E_OK, "La fusion de la branche %s et %s rencontre des conflits", current_branch, remote_branch);
+    freeWorkTree(merged_wt);  
+    free(current_wt_hash);
+    free(current_branch_name);
+    free(remote_wt_hash);
     return conflicts;
   }
 
   char *hash = saveWorkTree(merged_wt, ".");  
 
   Commit *merged_commit = createCommit(hash);
+
+  freeWorkTree(merged_wt);
   
   commitSet(merged_commit, "predecessor", current_wt_hash);
   commitSet(merged_commit, "merged_predecessor", remote_wt_hash);
 
+  free(current_wt_hash);
+  free(remote_wt_hash);
+
   if(message != NULL){
-    commitSet(merged_commit, "message", remote_wt_hash);
+    commitSet(merged_commit, "message", message);
   }
   
   const char* commit_hash = blobCommit(merged_commit);
@@ -471,24 +513,10 @@ List* merge(const char* remote_branch, const char* message){
 
   restoreCommit(commit_hash);
 
-  free(current_branch);
-  free(current_branch_name);
-  free(current_commit_path);
-  free(remote_commit_path);
-
-  freeCommit(current_commit);
-  freeCommit(remote_commit);
-
-  free(current_wt_hash);
-  free(remote_wt_hash);
-
-  freeWorkTree(current_wt);
-  freeWorkTree(remote_wt);
-  freeList(conflicts);
-  freeWorkTree(merged_wt);
   free(hash);
   freeCommit(merged_commit);
   free((void *)commit_hash);
+  free(current_branch_name);
 
   return NULL;
 }

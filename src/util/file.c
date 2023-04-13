@@ -123,6 +123,10 @@ bool file_exists(const char *file)
 
 void cp(const char *to, const char *from)
 {
+    if(to == NULL || from == NULL){
+        err_log(E_ERR, "Paramètre null");
+        return;
+    }
     //On crée les dossiers parents du fichier tels que "dos/sous-dos/fichier.txt" crée le dossier dos puis sous-dos
     char *cursor = strdup(to);
     char *file = strrchr(cursor, '/');
@@ -204,11 +208,15 @@ char *filePath(const char *hash){
 
 void blobFile(const char *file)
 {
+    if(file == NULL){
+        err_log(E_WARN, "Tentative de faire un instantanné d'un fichier dont le nom est null..");
+        return;
+    }
     char *hash = sha256file(file);
     char *path = filePath(hash);
 
     cp(path, file);
 
-    free(hash);
-    free(path);
+    if(path) free(path);
+    if(hash) free(hash);
 }

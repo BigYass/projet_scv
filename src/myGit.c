@@ -18,8 +18,6 @@
 
 #include "include/util/file.h"
 
-//test
-
 void create_tmp_file(){
     mkdir(TMP_DIRECTORY, 0700);
 }
@@ -218,7 +216,7 @@ int main(int argc, char *argv[])
 
             for(int i = 2; ++i < argc;*delim = ' '){
                 if(size >= strlen(msg) + strlen(argv[i])){
-                    size <<= 2; msg = realloc(msg, size); // => size *= 2
+                    size <<= 1; msg = realloc(msg, size); // => size *= 2
                 }
                 strcat(msg, argv[i]);
                 strcat(msg, delim);
@@ -343,41 +341,49 @@ int main(int argc, char *argv[])
             test_hash();
             free(value);
         }
+        
         value = commitGet(modules, "list");
         if(modules == NULL || value){
             test_list();
             free(value);
         }
+        
         value = commitGet(modules, "file");
         if(modules == NULL || value){
             test_files();
             free(value);
         }
+        
         value = commitGet(modules, "worktree");
         if(modules == NULL || value){
             test_work_file();
             free(value);
         }
+        
         value = commitGet(modules, "branch");
         if(modules == NULL || value){
             test_branch();
             free(value);
         }
+        
         value = commitGet(modules, "commit");
         if(modules == NULL || value){
             test_commit();
             free(value);
         }
+        
         value = commitGet(modules, "git");
         if(modules == NULL || value){
             test_my_git();
             free(value);
         }
+        
         value = commitGet(modules, "refs");
         if(modules == NULL || value){
             test_refs();
             free(value);
         }
+        
         freeCommit(modules);
     }
     else {
