@@ -10,24 +10,24 @@
 
 void initRefs()
 {
-  int err = mkdir(".refs", 0777);
+  int err = mkdir(REFS_DIRECTORY, 0777);
   if(err){
-    err_log(E_WARN, "Problème lors de la création de .refs");
+    err_logf(E_WARN, E_MSG_MKDIR, REFS_DIRECTORY);
     return;
   }
 
-  FILE *f = fopen(".refs/master", "w");
+  FILE *f = fopen(REFS_DIRECTORY "/master", "w");
   fclose(f);
-  f = fopen(".refs/HEAD", "w");
+  f = fopen(REFS_DIRECTORY  "/HEAD", "w");
   fclose(f);
 }
 
 void createUpdateRef(const char *ref_name, const char *hash)
 {
-  char path[MAX_BUF_SIZE] = ".refs/";
+  char path[MAX_BUF_SIZE] = REFS_DIRECTORY "/";
 
   if(ref_name == NULL){
-    err_log(E_ERR, "Chaine de charactère null...");
+    err_log(E_ERR, E_MSG_PARAM_NULL);
     return;
   }
 
@@ -35,7 +35,7 @@ void createUpdateRef(const char *ref_name, const char *hash)
   FILE *f = fopen(path, "w");
 
   if(f == NULL){
-    err_logf(E_ERR, "Problème lors de l'ouverture du fichier %s", path);
+    err_logf(E_ERR, E_MSG_FILE_OPEN, path);
   }
 
   fputs(hash, f);
@@ -45,22 +45,22 @@ void createUpdateRef(const char *ref_name, const char *hash)
 
 void deleteRef(const char *ref_name)
 {
-  char buff[MAX_BUF_SIZE] = ".refs/";
+  char buff[MAX_BUF_SIZE] = REFS_DIRECTORY "/";
   strcat(buff, ref_name);
 
   if(remove(buff))
-    err_logf(E_WARN, "Problème lors de la supression du fichier %s", buff);
+    err_logf(E_WARN, E_MSG_FILE_SUPPR, buff);
 }
 
 char *getRef(const char *ref_name)
 {
-  char buff[MAX_BUF_SIZE] = ".refs/";
+  char buff[MAX_BUF_SIZE] = REFS_DIRECTORY "/";
   strcat(buff, ref_name);
 
   FILE *f = fopen(buff, "r");
 
   if(f == NULL){
-    err_logf(E_ERR, "Problème lors de la lecture du fichier %s", buff);
+    err_logf(E_ERR, E_MSG_FILE_OPEN, buff);
     return NULL;
   }
 

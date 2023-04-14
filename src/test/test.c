@@ -368,7 +368,7 @@ void test_commit(){
     const char *test_keys[] = {
         pair->key,
         "test",
-        "tree",
+        TREE_KEY,
         "",
         NULL
     };

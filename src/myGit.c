@@ -57,13 +57,13 @@ int main(int argc, char *argv[])
         printf("Projet initialisé!\n");
     }
     else if(!strcmp(argv[1], "list-refs")){
-        if(!file_exists(".refs")){
-            printf("Le fichier .refs n'existe. Veuiller initialiser le programme avec la commande %s init\n", argv[0]);
+        if(!file_exists(REFS_DIRECTORY)){
+            printf("Le fichier " REFS_DIRECTORY " n'existe. Veuiller initialiser le programme avec la commande %s init\n", argv[0]);
             return 0;
         }
         printf("refs :\n");
 
-        List *L = listdir(".refs");
+        List *L = listdir(REFS_DIRECTORY);
         for(Cell* cursor = *L; cursor; cursor = cursor->next){
             if (cursor->data[0] == '.') continue;
             char *content = getRef(cursor->data);

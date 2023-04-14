@@ -3,6 +3,11 @@
 
 #define COMMIT_SIZE 0x100
 
+#define PREDECESSOR_KEY "predecessor"
+#define MESSAGE_KEY "message"
+#define MERGED_MESSAGE_KEY "merged_predecessor"
+#define TREE_KEY "tree"
+
 typedef struct key_value_pair {
   char* key;
   char* value;
@@ -73,9 +78,9 @@ Commit* initCommit();
 void commitSet(Commit* c, const char* key, const char* value);
 
 /**
- * @brief Alloue et initialise un Commit puis y a ajoute l'élément obligatoire de clé "tree"
+ * @brief Alloue et initialise un Commit puis y a ajoute l'élément obligatoire de clé TREE_KEY
  * 
- * @param hash Valeur de "tree"
+ * @param hash Valeur de TREE_KEY
  * @return Commit* Commit nouvellement alloué
  */
 Commit* createCommit(const char* hash);

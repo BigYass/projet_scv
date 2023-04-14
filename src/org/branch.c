@@ -16,7 +16,7 @@ void initBranch()
   FILE *f = fopen(".current_branch", "w");
 
   if(f == NULL){
-    err_log(E_ERR, "Problème lors de l'ouverture du fichier .current_branch");
+    err_logf(E_ERR, E_MSG_FILE_OPEN, ".current_branch");
     return;
   }
 
@@ -26,7 +26,7 @@ void initBranch()
 
 int branchExists(const char *branch)
 {
-  List *refs = listdir(".refs/");
+  List *refs = listdir(REFS_DIRECTORY "/");
   int result = searchList(refs, branch) != NULL;
   freeList(refs);
   return result;
@@ -35,13 +35,14 @@ int branchExists(const char *branch)
 void createBranch(const char *branch)
 {
   if(branch == NULL){
+    err_log(E_WARN, E_MSG_PARAM_NULL);
     return;
   }
 
   char *hash = getRef("HEAD");
 
   if(hash == NULL){
-    err_log(E_ERR, "Chaine de charactère NULL...");
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "getRef", "HEAD");
     return;
   }
 
@@ -52,6 +53,11 @@ void createBranch(const char *branch)
 char *getCurrentBranch()
 {
   FILE *f = fopen(".current_branch", "r");
+  if(f == NULL){
+    err_logf(E_ERR, E_MSG_FILE_OPEN, ".current_branch");
+    return NULL;
+  }
+
   char *buff = malloc(sizeof(char) * MAX_BUF_SIZE);
 
   fgets(buff, MAX_BUF_SIZE, f);
@@ -62,6 +68,11 @@ char *getCurrentBranch()
 
 void printBranch(const char *branch)
 {
+  if(branch == NULL){
+    err_log(E_WARN, E_MSG_PARAM_NULL);
+    return;
+  }
+
   char *commit_hash = getRef(branch);
   char *path = commitPath(commit_hash);
 
@@ -70,7 +81,7 @@ void printBranch(const char *branch)
   if(path) free(path);
 
   while(c != NULL){
-    char *msg = commitGet(c, "message");
+    char *msg = commitGet(c, MESSAGE_KEY);
     if(msg) {
       printf("%s => \"%s\"\n", commit_hash, msg);
       free(msg);
@@ -80,7 +91,7 @@ void printBranch(const char *branch)
 
     
     if(commit_hash) free(commit_hash);
-    commit_hash = commitGet(c, "predecessor");
+    commit_hash = commitGet(c, PREDECESSOR_KEY);
     freeCommit(c);
 
     path = commitPath(commit_hash);
@@ -99,20 +110,20 @@ List *branchList(const char *branch)
 
   char *hash = getRef(branch);
   if(hash == NULL){
-    err_logf(E_ERR, "getRef(\"%s\") a renvoye NULL", branch);
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "getRef", branch);
     return NULL;
   }
 
   char *path = commitPath(hash);
   if(path == NULL){
-    err_logf(E_ERR, "commitPath(\"%s\") a renvoye NULL", hash);
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "commitPath", hash);
     free(hash);
     return NULL;
   }
 
   Commit *c = ftc(path);
   if(c == NULL){
-    err_logf(E_ERR, "La conversion de (\"%s\") a échoué", path);
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "ftc", path);
     free(hash); free(path);
     return NULL;
   }
@@ -122,7 +133,7 @@ List *branchList(const char *branch)
 
     if(path) free(path);
     if(hash) free(hash);
-    hash = commitGet(c, "predecessor"); // On duplique pour facilité la libération de mémoire
+    hash = commitGet(c, PREDECESSOR_KEY); // On duplique pour facilité la libération de mémoire
     path = commitPath(hash);
 
     freeCommit(c);
@@ -138,7 +149,7 @@ List *branchList(const char *branch)
 List *getAllCommits()
 {
   List *L = initList();
-  List *content = listdir(".refs");
+  List *content = listdir(REFS_DIRECTORY);
 
   for(Cell *cursor = *content; cursor != NULL; cursor = cursor->next){
     if(cursor->data[0] == '.') continue;
@@ -169,7 +180,7 @@ void myGitCheckoutBranch(const char *branch)
   char* hash_commit = getRef(branch);
 
   if(hash_commit == NULL){
-    err_logf(E_ERR, "Le hash de %s a retourné null...", branch);
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "getRef", branch);
     return;
   }
 

@@ -1,8 +1,10 @@
 #ifndef REFS
 #define REFS
 
+#define REFS_DIRECTORY ".refs"
+
 /**
- * @brief Crée le répertoire caché .refs et les composants master et HEAD
+ * @brief Crée le répertoire caché REFS_DIRECTORY et les composants master et HEAD
  * 
  */
 void initRefs();

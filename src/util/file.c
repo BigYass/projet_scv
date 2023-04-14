@@ -18,13 +18,13 @@ void createFile(const char *file)
 {
     // On crée le fichier en utilisant fopen
     if(file_exists(file)){
-        err_logf(E_WARN, "Le fichier %s existe déjà", file);
+        err_logf(E_WARN, E_MSG_FILE_EXIST, file);
         return;
     }
     FILE *f = fopen(file, "w");
 
     if (f == NULL){
-        err_logf(E_WARN, "Problème lors de la création de %s", file);
+        err_logf(E_WARN, E_MSG_FILE_OPEN, file);
         return;
     }
 
@@ -41,7 +41,7 @@ void ltof(List *L, const char *path)
     FILE *f = fopen(path, "w");
 
     if(f == NULL){
-        err_logf(E_ERR, "Erreur lors de l'ouverture du fichier %s", path);
+        err_logf(E_ERR, E_MSG_FILE_OPEN, path);
         free(s);
         return;
     }
@@ -61,7 +61,7 @@ List *ftol(const char *path)
 
     if (f == NULL)
     {
-        err_logf(E_ERR, "%sErreur lors de l'ouverture de %s%s!\n", RED, path, RESET);
+        err_logf(E_ERR, E_MSG_FILE_OPEN, path);
         return NULL;
     }
     
@@ -109,7 +109,7 @@ List *listdir(const char *root_dir)
     }
     else
     {
-        err_logf(E_ERR, "L'ouverture du dossier : %s a echoue...\n", root_dir);
+        err_logf(E_ERR, E_MSG_DIR_OPEN, root_dir);
     }
 
     return l;
@@ -124,7 +124,7 @@ bool file_exists(const char *file)
 void cp(const char *to, const char *from)
 {
     if(to == NULL || from == NULL){
-        err_log(E_ERR, "Paramètre null");
+        err_log(E_ERR, E_MSG_PARAM_NULL);
         return;
     }
     //On crée les dossiers parents du fichier tels que "dos/sous-dos/fichier.txt" crée le dossier dos puis sous-dos
@@ -146,7 +146,7 @@ void cp(const char *to, const char *from)
             err_logf(E_OK, "Le nom '%s' est déjà pris par un fichier ou un dossier. Code : %d", current_dir, errno);
         
         } else if (mkdir(current_dir, 0700) != 0) { // créer le dossier avec les droits maximums
-            err_logf(E_ERR, "Impossible de créer le dossier '%s'", current_dir);
+            err_logf(E_ERR, E_MSG_MKDIR, current_dir);
             free(cursor);
             return;
         }
@@ -159,14 +159,14 @@ void cp(const char *to, const char *from)
     FILE *dest = fopen(to, "w");
 
     if (dest == NULL){
-        err_logf(E_ERR, "Erreur lors de la création de %s\"%s\"%s...\n", RED, to, RESET);
+        err_logf(E_ERR, E_MSG_FILE_OPEN, to);
         return;
     }
 
     FILE *source = fopen(from, "r");
 
     if(source == NULL){
-        err_logf(E_ERR, "Erreur lors l'ouverture de %s", from);
+        err_logf(E_ERR, E_MSG_FILE_OPEN, from);
         fclose(dest);
         return;
     }
@@ -183,7 +183,7 @@ char *filePath(const char *hash){
     char *path = malloc(sizeof(char) * MAX_BUF_SIZE);
 
     if(path == NULL || hash == NULL){
-        err_log(E_ERR, "Null exeption");
+        err_log(E_ERR, E_MSG_PARAM_NULL);
         return NULL;
     }
 
@@ -192,7 +192,7 @@ char *filePath(const char *hash){
     char *hash_path = hashToPath(hash);
 
     if(hash_path == NULL){
-        err_logf(E_ERR, "hashToPath a retourné NULL avec %s", hash);
+        err_logf(E_ERR, E_MSG_FUNC_NULL, "hashToPath", hash);
         free(path);
         return NULL;
     }
@@ -209,7 +209,7 @@ char *filePath(const char *hash){
 void blobFile(const char *file)
 {
     if(file == NULL){
-        err_log(E_WARN, "Tentative de faire un instantanné d'un fichier dont le nom est null..");
+        err_log(E_WARN, E_MSG_PARAM_NULL);
         return;
     }
     char *hash = sha256file(file);

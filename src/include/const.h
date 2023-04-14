@@ -15,10 +15,15 @@
  * 0 : Aucun debug |
  * 1 : Erreur seulement | 
  * 2 : Erreur et Warnings |
- * 3 : Tout
+ * 3 : Tout | 
+ * (cf. debug.c)
  * 
  */
 #define DEBUG 2
+
+//Macros de langage (incomplet)
+#define LANG_FR_FR // Français - France
+#define LANG_EN_US // English - United States
 
 //Fichiers temporaire où seront stocké notamment les instantannés. Peut être que .git est mieux
 #define TMP_DIRECTORY ".tmp"

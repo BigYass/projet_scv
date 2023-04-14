@@ -25,7 +25,7 @@ Cell* buildCell(const char* h) {
     Cell* c = malloc(sizeof(Cell));
 
     if(c == NULL){
-        err_log(E_ERR, "Erreur lors de l'allocation initiale d'une cellule de liste. Pas assez RAM ?");
+        err_log(E_ERR, E_MSG_MALLOC_NULL);
         return NULL;
     }
 
@@ -36,7 +36,7 @@ Cell* buildCell(const char* h) {
 
 void insertFirst(List *L, Cell* C){
     if(C == NULL || L == NULL)
-        err_logf(E_ERR, "Erreur: C = (0x%x) // L = (0x%x)", L, C);
+        err_log(E_ERR, E_MSG_PARAM_NULL);
 
     C->next = *L;
     *L = C;
@@ -44,7 +44,7 @@ void insertFirst(List *L, Cell* C){
 
 void freeList(List *L){
     if(L == NULL) {
-        err_log(E_WARN, "Tentative de libérée une liste null...");
+        err_log(E_WARN, E_MSG_PARAM_NULL);
         return;
     }
 
@@ -60,7 +60,7 @@ void freeList(List *L){
 
 void freeCell(Cell *c){
     if(c == NULL){
-        err_log(E_WARN, "Tentative de libéré une cellule null");
+        err_log(E_WARN, E_MSG_PARAM_NULL);
         return;
     }
 
@@ -70,7 +70,7 @@ void freeCell(Cell *c){
 
 char* ctos(Cell* c){
     if(c == NULL){
-        err_log(E_ERR, "Tentative de conversion d'une cellule null...");
+        err_log(E_ERR, E_MSG_PARAM_NULL);
         return "";
     }
     return c->data;
@@ -80,7 +80,7 @@ char* ltos(List* L){
     size_t size = MAX_BUF_SIZE;
     char *s = malloc(sizeof(char) * size);
     if(s == NULL || L == NULL || *L == NULL) {
-        err_logf(E_ERR, "Erreur: s = \"%s\"\n\tL = 0x%x", s, L);
+        err_log(E_ERR, E_MSG_PARAM_NULL);
         return "";
     }
 
@@ -94,7 +94,7 @@ char* ltos(List* L){
         if(size < strlen(s) + strlen(cursor->data) + 1){ 
             size *= 2; s = realloc(s, sizeof(char) * size);
             if(s == NULL){
-                err_log(E_ERR, "Erreur lors de l'allocation de s");
+                err_log(E_ERR, E_MSG_ALLOC_NULL);
             }
         }
         strcat(s, "|");
@@ -110,7 +110,7 @@ char* ltos(List* L){
 
 Cell* listGet(List* L, int i){
     if(L == NULL){
-        err_log(E_WARN, "Tentative de parcours d'une liste vide");
+        err_log(E_WARN, E_MSG_PARAM_NULL);
         return NULL;
     }
     Cell *cursor = *L;
@@ -120,14 +120,14 @@ Cell* listGet(List* L, int i){
     }
 
     if(cursor == NULL)
-        err_logf(E_ERR, "Index out of range (%d)", i);
+        err_logf(E_WARN, "Index out of range (%d)", i);
 
     return cursor;
 }
 
 Cell* searchList(List* L, const char* str){
     if(L == NULL || str == NULL){
-        err_logf(E_WARN, "Erreur: Paramètre nul (s = \"%s\", L = 0x%x)", str, L);
+        err_log(E_WARN, E_MSG_PARAM_NULL);
         return NULL;
     }
     List cursor = *L;
@@ -171,7 +171,7 @@ List *filterList(List * L, const char *pattern)
 
 int sizeList(List *L){
     if(L == NULL){
-        err_log(E_WARN, "Tentative de calcule d'une taille d'une liste null..");
+        err_log(E_WARN, E_MSG_PARAM_NULL);
         return 0;
     }
     

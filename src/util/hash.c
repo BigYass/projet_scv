@@ -25,7 +25,7 @@ char* sha256file(const char* file){
     FILE* f = fopen(fname,  "r");
 
     if(f == NULL){
-        err_logf(E_ERR, "Problèmé lors de l'ouverture de " YELLOW "%s" RESET, fname);
+        err_logf(E_ERR, E_MSG_FILE_OPEN, fname);
         return NULL;
     }
     
@@ -47,7 +47,7 @@ char *hashToPath(const char *hash)
     char *path = malloc(sizeof(char) * 66);
 
     if(path == NULL || hash == NULL){
-        err_log(E_ERR, "Erreur chaine de charactère null");
+        err_log(E_ERR, E_MSG_PARAM_NULL);
         return NULL;
     }
 

@@ -15,7 +15,7 @@
 kvp *createKeyVal(const char *key, const char *val)
 {
   if(key == NULL || val == NULL){
-    err_log(E_WARN, "Tentative de création d'une paire avec paramètre null..");
+    err_log(E_WARN, E_MSG_PARAM_NULL);
     return NULL;
   }
 
@@ -30,7 +30,7 @@ kvp *createKeyVal(const char *key, const char *val)
 void freeKeyVal(kvp *kv)
 {
   if(kv == NULL){
-    err_log(E_WARN, "Tentative de libéré une paire null");
+    err_log(E_WARN, E_MSG_PARAM_NULL);
     return;
   }
 
@@ -42,7 +42,7 @@ void freeKeyVal(kvp *kv)
 void freeCommit(Commit *c)
 {
   if(c == NULL){
-    err_log(E_WARN, "Tentative de libéré un commit null..");
+    err_log(E_WARN, E_MSG_PARAM_NULL);
     return;
   }
 
@@ -56,7 +56,7 @@ void freeCommit(Commit *c)
 char *kvts(kvp *k)
 {
   if(k == NULL){
-    err_log(E_WARN, "Tentative de conversion d'une paire NULL");
+    err_log(E_WARN, E_MSG_PARAM_NULL);
     return NULL;
   }
   char *s = malloc(sizeof(char) * MAX_BUF_SIZE);
@@ -120,7 +120,7 @@ void commitSet(Commit *c, const char *key, const char *value)
 Commit *createCommit(const char *hash)
 {
   Commit *c = initCommit();
-  commitSet(c, "tree", hash);
+  commitSet(c, TREE_KEY, hash);
   return c;
 }
 
@@ -276,28 +276,28 @@ void restoreCommit(const char *hash)
   Commit *c = ftc(path);
 
   if(c == NULL){
-    err_log(E_ERR, "La fonction ftc a renvoyé NULL");
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "ftc", path);
     return;
   }
 
-  char *wt_hash = commitGet(c, "tree");
+  char *wt_hash = commitGet(c, TREE_KEY);
 
   if(wt_hash == NULL){
-    err_log(E_ERR, "Le commit de contien pas \"tree\" ?");
+    err_log(E_ERR, "Le commit ne contien pas \"tree\" ?");
     return;
   }
 
   char *tree_hash = workTreePath(wt_hash);
 
   if(tree_hash == NULL){
-    err_logf(E_ERR, "Impossible de convertir" YELLOW "%s" RESET " en chemin d'accès...", wt_hash);
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "workTreePath", wt_hash);
     return;
   }
 
   WorkTree *wt = ftwt(tree_hash);
 
   if(wt == NULL){
-    err_logf(E_ERR, "Problème de conversion en WorkTree du fichier %s", tree_hash);
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "ftwt", tree_hash);
     return;
   }
   

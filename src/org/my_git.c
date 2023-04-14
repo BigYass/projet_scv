@@ -30,19 +30,19 @@ void myGitAdd(const char *file)
     free(hash);
   }
   else {
-    err_logf(E_ERR, "Bruh, le fichier %s n'existe pas...", file);
+    err_logf(E_ERR, E_MSG_FILE_EXIST, file);
   }
   freeWorkTree(wt);
 }
 
 void myGitCommit(const char *branch_name, const char *message)
 {
-  if(!file_exists(".refs")){
+  if(!file_exists(REFS_DIRECTORY)){
     err_log(E_WARN, "Il faut d'abord initialiser les références du projets");
     return;
   }
 
-  char path[MAX_BUF_SIZE] = ".refs/";
+  char path[MAX_BUF_SIZE] = REFS_DIRECTORY "/";
   strcat(path, branch_name);
   if(!file_exists(path)){
     err_logf(E_WARN, "La branche %s n'existe pas", path);
@@ -73,10 +73,10 @@ void myGitCommit(const char *branch_name, const char *message)
   free(hash);
 
   if (strlen(last_hash) > 0){
-    commitSet(c, "predecessor", last_hash);
+    commitSet(c, PREDECESSOR_KEY, last_hash);
   }
   if(message != NULL){
-    commitSet(c, "message", message); // commit["message"] = message;
+    commitSet(c, MESSAGE_KEY, message); // commit["message"] = message;
   }
   free(last_hash);
 
