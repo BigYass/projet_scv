@@ -14,20 +14,16 @@
 #include "../include/org/my_git.h"
 
 
-
-
-// TODO : O bordel
-
 int getChmod(const char *path)
 {
   struct stat ret;
-  if (stat(path, &ret) == -1)
+  if (stat(path, &ret) == -1) // Fichier ou dossier inexistant ou inaccessible
   {
     return -1;
   }
-  return (ret.st_mode & S_IRUSR) | (ret.st_mode & S_IWUSR) | (ret.st_mode & S_IXUSR) | /*owner*/
-         (ret.st_mode & S_IRGRP) | (ret.st_mode & S_IWGRP) | (ret.st_mode & S_IXGRP) | /*group*/
-         (ret.st_mode & S_IROTH) | (ret.st_mode & S_IWOTH) | (ret.st_mode & S_IXOTH);  /*other*/
+  return (ret.st_mode & S_IRUSR) | (ret.st_mode & S_IWUSR) | (ret.st_mode & S_IXUSR) | 
+         (ret.st_mode & S_IRGRP) | (ret.st_mode & S_IWGRP) | (ret.st_mode & S_IXGRP) | 
+         (ret.st_mode & S_IROTH) | (ret.st_mode & S_IWOTH) | (ret.st_mode & S_IXOTH); 
 }
 
 void setMode(int mode, char *path)
@@ -41,9 +37,14 @@ void setMode(int mode, char *path)
 
 WorkFile *createWorkFile(const char *name)
 {
-  WorkFile *wf = malloc(sizeof(WorkFile));
-
-  memset(wf, 0, sizeof(WorkFile));
+  if(name == NULL){
+    err_log(E_WARN, "Tentative de crée un WorkFile avec un nom null..");
+    return NULL;
+  }
+  // calloc mets à 0 la zone contrairemet à malloc, plus besoin de le faire manuellement
+  WorkFile *wf = calloc(sizeof(WorkFile), 1); 
+  
+  // memset(wf, 0, sizeof(WorkFile));
 
   wf->name = strdup(name);
   wf->hash = NULL;
@@ -58,6 +59,8 @@ void freeWorkFile(WorkFile *wf)
     err_log(E_WARN, "Tentative de libéré un WorkFile null..");
     return;
   }
+
+  // En théorie name n'est jamais null
   if(wf->hash) free(wf->hash);
   if(wf->name) free(wf->name);
   free(wf);
@@ -65,7 +68,7 @@ void freeWorkFile(WorkFile *wf)
 
 char *wfts(WorkFile *wf)
 {
-  char *s = malloc(sizeof(char) * MAX_BUF_SIZE);
+  char *s = calloc(sizeof(char), MAX_BUF_SIZE);
 
   sprintf(s, "%s\t%s\t%d", wf->name, wf->hash, wf->mode);
 
@@ -89,8 +92,9 @@ WorkFile *stwf(const char *ch)
 WorkTree *initWorkTree()
 {
   WorkTree *wt = malloc(sizeof(WorkTree));
-  wt->tab = malloc(WORKTREE_SIZE * sizeof(WorkFile));
-  memset(wt->tab, 0, WORKTREE_SIZE * sizeof(WorkFile));
+  wt->tab = calloc(sizeof(WorkFile), WORKTREE_SIZE);
+  //memset(wt->tab, 0, WORKTREE_SIZE * sizeof(WorkFile));
+  
   wt->size = WORKTREE_SIZE;
   wt->n = 0;
 

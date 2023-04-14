@@ -2,7 +2,10 @@
 #define DEBUG_LIB
 
 /**
- * @brief Affiche un message avec le numéro de la ligne et le fichier
+ * @brief Affiche un message avec le numéro de la ligne et le fichier \n
+ * __FILE__ = Nom du fichier \n
+ * __LINE__ = Numéro de la ligne \n
+ * __func__ = Nom de la fonction
  * 
  */
 #define err_logf(err_type, format, ...) __err_logf(__FILE__, __LINE__, __func__, (err_type), (format), __VA_ARGS__)
