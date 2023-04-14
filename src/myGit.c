@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
 
         bool is_message = false;
 
+        char delim[] = "\0\0"; 
+
         for(int i = 2; i < argc; i++){
             if(argv[i][0] == '-') { //Si le paramètre commence par un tiret
                 if(strcmp(argv[i-1], "-m")){
@@ -135,7 +137,9 @@ int main(int argc, char *argv[])
                     size <<= 1;
                     msg = realloc(msg, size);
                 }
+                strcat(msg, delim);
                 strcat(msg, argv[i]);
+                *delim = ' ';
             }
             else name = argv[i]; // Sinon il s'agit du nom de la branche
         }
@@ -214,7 +218,7 @@ int main(int argc, char *argv[])
 
             char delim[2] = "\0";
 
-            for(int i = 2; ++i < argc;*delim = ' '){
+            for(int i = 2; ++i < argc; *delim = ' '){
                 if(size >= strlen(msg) + strlen(argv[i])){
                     size <<= 1; msg = realloc(msg, size); // => size *= 2
                 }
@@ -252,7 +256,7 @@ int main(int argc, char *argv[])
                 
                 case 1:
                     createDeletionCommit(argv[2], conflitcs, msg);
-                    new_conflitcts = merge(current_branch, argv[2]);
+                    new_conflitcts = merge(argv[2], msg);
                     printf("Vous avez choisis de garder les fichier de la branche courrante (%s). ", current_branch);
 
                     if(new_conflitcts == NULL){
@@ -266,7 +270,7 @@ int main(int argc, char *argv[])
 
                 case 2:
                     createDeletionCommit(current_branch, conflitcs, msg);
-                    new_conflitcts = merge(current_branch, argv[2]);
+                    new_conflitcts = merge(argv[2], msg);
                     printf("Vous avez choisis de garder les fichier l'autre branche (%s). ", argv[2]);
 
                     if(new_conflitcts == NULL){
@@ -300,7 +304,7 @@ int main(int argc, char *argv[])
 
                     createDeletionCommit(current_branch, current_suppr, msg);
                     createDeletionCommit(argv[2], remote_suppr, msg);
-                    List *new_conflitcts = merge(current_branch, msg);
+                    new_conflitcts = merge(argv[2], msg);
 
                     if(new_conflitcts == NULL){
                         printf("Fin des conflits!\nLes branches ont été correctement fusionné!\n");
@@ -308,7 +312,10 @@ int main(int argc, char *argv[])
                     else {
                         err_logf(E_ERR, "La branche %s et %s connaisse encore des conflits après la supression de celle ci", current_branch, argv[2]);
                     }
-
+                    
+                    freeList(remote_suppr);
+                    freeList(current_suppr);
+                    
                     break;
                 }
 
@@ -320,8 +327,12 @@ int main(int argc, char *argv[])
                     printf("Choix inconnue, annulation...\n");
                     break;
                 }
+                if(new_conflitcts) freeList(new_conflitcts);
 
             }
+            free(current_branch);
+            free(msg);
+            freeList(conflitcs);
         }
     }
     else if(!strcmp(argv[1], "test")){

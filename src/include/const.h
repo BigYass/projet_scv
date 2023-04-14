@@ -8,7 +8,7 @@
 #define MAX_BUF_SIZE 0x100
 
 #define LINUX //Pour compiler sur Linux
-// #define WINDOWS //Pour compiler sur Windows (non fait)
+// #define WINDOWS //Pour compiler sur Windows (non fonctionnel)
 
 /**
  * @brief Niveau de debug |
@@ -20,6 +20,7 @@
  */
 #define DEBUG 2
 
+//Fichiers temporaire où seront stocké notamment les instantannés. Peut être que .git est mieux
 #define TMP_DIRECTORY ".tmp"
 
 // Réinitialise les formats et la couleur du texte

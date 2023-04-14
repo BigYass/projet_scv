@@ -57,7 +57,7 @@ void myGitCommit(const char *branch_name, const char *message)
   free(head_hash);
 
   if(is_different){
-    err_logf(E_WARN, "HEAD doit pointer sur le dernier commit de la branche %s", branch_name);
+    err_logf(E_ERR, "HEAD doit pointer sur le dernier commit de la branche %s", branch_name);
     return;
   }
 

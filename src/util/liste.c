@@ -170,7 +170,14 @@ List *filterList(List * L, const char *pattern)
 }
 
 int sizeList(List *L){
+    if(L == NULL){
+        err_log(E_WARN, "Tentative de calcule d'une taille d'une liste null..");
+        return 0;
+    }
+    
     int len = 0;
+
+    
 
     for(Cell *cursor = *L; cursor != NULL; cursor = cursor->next) 
         len++;

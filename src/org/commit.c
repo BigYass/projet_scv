@@ -126,8 +126,8 @@ Commit *createCommit(const char *hash)
 
 char *commitGet(Commit *c, const char *key)
 {
-  if(key == NULL){
-    err_log(E_WARN, "Tentative de recherche d'une clé null dans un commit..");
+  if(key == NULL || c == NULL){
+    err_log(E_WARN, "Tentative de recherche d'une clé null dans un commit null..");
     return NULL;
   }
   unsigned long hash = sdbm((unsigned char*)key) % c->size;

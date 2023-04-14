@@ -395,14 +395,12 @@ WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts){
   
 
   // On rajoute les éléments de wt1
-  if(wt1)
-    for(int i = 0; i < wt1->n; i++)
+  if(wt1) for(int i = 0; i < wt1->n; i++)
       if(searchList(*conflicts, wt1->tab[i].name))
         appendWorkTree(wt, wt1->tab[i].name, wt1->tab[i].hash, wt1->tab[i].mode);
 
   // On rajoute les éléments de wt2
-  if(wt2)
-    for(int i = 0; i < wt2->n; i++)
+  if(wt2) for(int i = 0; i < wt2->n; i++)
       if(searchList(*conflicts, wt2->tab[i].name))
         appendWorkTree(wt, wt2->tab[i].name, wt2->tab[i].hash, wt2->tab[i].mode);
 
@@ -410,6 +408,11 @@ WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts){
 }
 
 List* merge(const char* remote_branch, const char* message){
+  if(remote_branch == NULL){
+    err_log(E_ERR, "remote_branch est null..");
+    exit(-1);
+  }
+
   char *current_branch_name = getCurrentBranch();
   char *current_branch = getRef(current_branch_name);
 
@@ -467,7 +470,6 @@ List* merge(const char* remote_branch, const char* message){
   free(current_wt_path);
   free(remote_wt_path);
   
-  free(current_branch);
   free(current_commit_path);
   free(remote_commit_path);
 
@@ -476,7 +478,6 @@ List* merge(const char* remote_branch, const char* message){
 
   freeWorkTree(current_wt);
   freeWorkTree(remote_wt);
-  freeList(conflicts);
 
 
   if(sizeList(conflicts) > 0){
@@ -485,8 +486,11 @@ List* merge(const char* remote_branch, const char* message){
     free(current_wt_hash);
     free(current_branch_name);
     free(remote_wt_hash);
+    free(current_branch);
     return conflicts;
   }
+  freeList(conflicts);
+  free(current_branch);
 
   char *hash = saveWorkTree(merged_wt, ".");  
 
@@ -552,7 +556,7 @@ void createDeletionCommit(const char *branch, List *conflicts, const char* messa
   free(commit_path);
 
   char *wt_hash = commitGet(commit, "tree");
-  free(commit);
+  freeCommit(commit);
   if(wt_hash == NULL){
     err_log(E_ERR, "Bruh, commit[\"tree\"] = null");
     free(current_branch);
@@ -583,7 +587,7 @@ void createDeletionCommit(const char *branch, List *conflicts, const char* messa
   createFile(".add");
 
   for(int i = 0; i < wt->n; i++)
-    if(searchList(conflicts, wt->tab[i].name))
+    if(!searchList(conflicts, wt->tab[i].name))
       myGitAdd(wt->tab[i].name);
 
   freeWorkTree(wt);
