@@ -2,13 +2,15 @@
 #define DEBUG_LIB
 
 /**
- * @brief Affiche un message avec le numéro de la ligne et le fichier \n
- * __FILE__ = Nom du fichier \n
- * __LINE__ = Numéro de la ligne \n
- * __func__ = Nom de la fonction
+ * @brief Affiche un message formatté avec le numéro de la ligne et le fichier
  * 
  */
 #define err_logf(err_type, format, ...) __err_logf(__FILE__, __LINE__, __func__, (err_type), (format), __VA_ARGS__)
+
+/**
+ * @brief Affiche un message avec le numéro de la ligne et le fichier 
+ * 
+ */
 #define err_log(err_type, s) __err_logf(__FILE__, __LINE__, __func__, (err_type), (s))
 
 typedef enum error_type {
