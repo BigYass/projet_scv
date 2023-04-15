@@ -8,7 +8,7 @@
 
 int hashFile (const char* source, const char* dest) {
 
-    char cmd[MAX_BUF_SIZE] = "\0";
+    char cmd[MAX_BUF_SIZE] = "\0"; 
 
     sprintf(cmd, "sha256sum \"%s\" > \"%s\"", source, dest);
 
