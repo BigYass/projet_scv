@@ -25,7 +25,7 @@ Cell *buildCell(const char *h)
 {
     if(h == NULL){
         err_log(E_WARN, E_MSG_PARAM_NULL);
-        return NULL;
+        return NULL; 
     }
 
     Cell *c = calloc(1, sizeof(Cell));
