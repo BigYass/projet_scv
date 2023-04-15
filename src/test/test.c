@@ -460,14 +460,14 @@ void test_refs(){
     int content_len = 7;
     char *content = random_str(content_len);
 
-    printf("Création ou mise à jour de la référence %s avec %s", ref_name, content);
+    printf("Création ou mise à jour de la référence %s avec %s\n", ref_name, content);
     createUpdateRef(ref_name, content);
 
 
     char *s = getRef(ref_name);
-    printf("Contenu de la référence : %s", s);
+    printf("Contenu de la référence : %s\n", s);
 
-    printf("Supression de la référence %s..", ref_name);
+    printf("Supression de la référence %s..\n", ref_name);
     deleteRef(ref_name);
 
     free(s);

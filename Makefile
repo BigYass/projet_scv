@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -ggdb
 
-# code test
+# Grrr paw
 
 SRC = src
 BIN = bin

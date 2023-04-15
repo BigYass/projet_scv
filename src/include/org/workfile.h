@@ -35,7 +35,7 @@ int getChmod(const char *path);
  */
 void setMode (int mode , char * path);
 
-// === MANIPULATION DE WORKFILE
+// === MANIPULATION DE WORKFILE ===
 
 /**
  * @brief Initialise un WorkFile avec son nom.

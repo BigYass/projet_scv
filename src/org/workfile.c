@@ -105,9 +105,9 @@ void freeWorkTree(WorkTree *wt){
     err_log(E_WARN, E_MSG_PARAM_NULL);
     return;
   }
-  for(int i = 0; i < wt->n; i++){
-    if(wt->tab[i].name) free(wt->tab[i].name);
-    if(wt->tab[i].hash) free(wt->tab[i].hash);
+  for(int i = 0; i < wt->size; i++){
+    if(wt->tab[i].name != NULL) free(wt->tab[i].name);
+    if(wt->tab[i].hash != NULL) free(wt->tab[i].hash);
   }
   free(wt->tab);
   free(wt);
@@ -141,7 +141,7 @@ int appendWorkTree(WorkTree *wt, const char *name, const char *hash, int mode)
   
   wt->tab[wt->n].mode = mode;
   wt->tab[wt->n].name = strdup(name);
-  wt->tab[wt->n++].hash = hash ? strdup(hash) : NULL;
+  wt->tab[wt->n++].hash = (hash != NULL) ? strdup(hash) : NULL; 
 
   return 0;
 }
@@ -313,6 +313,7 @@ char *saveWorkTree(WorkTree *wt, char *path)
     if (file_exists(full_path))
     {
       blobFile(full_path);
+      if(wt->tab[i].hash) free(wt->tab[i].hash);
       wt->tab[i].hash = sha256file(full_path);
       wt->tab[i].mode = getChmod(full_path);
     }
@@ -347,22 +348,18 @@ char *saveWorkTree(WorkTree *wt, char *path)
 int isWorkTree(char *hash)
 {
   char *file_path = filePath(hash);
-  char *file_path_t = strcat(file_path, ".t");
-  if (file_exists(file_path_t))
-  {
-    free(file_path);
-    free(file_path_t);
-    return 1;
-  }
-  
   if (file_exists(file_path))
   {
     free(file_path);
-    free(file_path_t);
     return 0;
   }
+  strcat(file_path, ".t");
+  if (file_exists(file_path))
+  {
+    free(file_path);
+    return 1;
+  }
   free(file_path);
-  free(file_path_t);
   return -1;
 }
 
