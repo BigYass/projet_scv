@@ -46,18 +46,4 @@ void printBranch(const char *branch);
  */
 List *branchList(const char *branch);
 
-/**
- * @brief Renvoie la liste des hash des commits de toutes les branches
- * 
- * @return List* La liste avec les hash
- */
-List *getAllCommits();
-
-/**
- * @brief Change de branche
- * 
- * @param branch 
- */
-void myGitCheckoutBranch(const char* branch);
-
 #endif

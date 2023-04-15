@@ -1,6 +1,8 @@
 #ifndef COMMIT
 #define COMMIT
 
+#include "../util/liste.h"
+
 #define COMMIT_SIZE 0x100
 
 #define PREDECESSOR_KEY "predecessor"
@@ -150,10 +152,19 @@ char* blobCommit(Commit* c);
 void restoreCommit(const char *hash);
 
 /**
- * @brief Change de branche avec un pattern
+ * @brief Renvoie la liste des hash des commits de toutes les branches
  * 
- * @param pattern Le paterne
+ * @return List* La liste avec les hash
  */
-void myGitCheckoutCommit(const char* pattern);
+List *getAllCommits();
+
+/**
+ * @brief Crée un commit de supression (en gros ca supprime les conflits pour pouvoir merge trkl)
+ * 
+ * @param branch La branche dont on doit supprimer les conflits
+ * @param conflicts La liste des fichiers en conflits
+ * @param message Le message (optionnel)
+ */
+void createDeletionCommit(const char *branch, List *conflicts, const char* message);
 
 #endif

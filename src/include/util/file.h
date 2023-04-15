@@ -70,6 +70,22 @@ char *filePath(const char* hash);
  */
 void blobFile(const char* file); 
 
+// === PERMISSIONS ===
 
+/**
+ * @brief Renvoie les autorisations d'un fichier
+ * 
+ * @param path Chemin vers le fichier
+ * @return int Les autorisations 
+ */
+int getChmod(const char *path);
+
+/**
+ * @brief Change les autorisations d'un fichier au chemin path avec la commande chmod <mode> <fichier>
+ * 
+ * @param mode Nouvelle autorisation
+ * @param path Chemin du fichier
+ */
+void setMode (int mode , char * path);
 
 #endif

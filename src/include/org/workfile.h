@@ -17,24 +17,6 @@ typedef struct {
   int n;
 } WorkTree;
 
-// === PERMISSIONS ===
-
-/**
- * @brief Renvoie les autorisations d'un fichier
- * 
- * @param path Chemin vers le fichier
- * @return int Les autorisations 
- */
-int getChmod(const char *path);
-
-/**
- * @brief Change les autorisations d'un fichier au chemin path avec la commande chmod <mode> <fichier>
- * 
- * @param mode Nouvelle autorisation
- * @param path Chemin du fichier
- */
-void setMode (int mode , char * path);
-
 // === MANIPULATION DE WORKFILE ===
 
 /**
@@ -179,23 +161,5 @@ void restoreWorkTree(WorkTree* wt, char* path);
  * @return WorkTree* La fusion
  */
 WorkTree *mergeWorkTrees(WorkTree *wt1, WorkTree *wt2, List **conflicts);
-
-/**
- * @brief Fusionne la branche courrante avec la branche passé en paramètre si aucun conflit existe
- * 
- * @param remote_branch La branche à fusionné
- * @param message Le message du merge
- * @return List* La liste avec les hash en non-conflits
- */
-List* merge(const char* remote_branch, const char* message);
-
-/**
- * @brief Crée un commit de supression (en gros ca supprime les conflits pour pouvoir merge trkl)
- * 
- * @param branch La branche dont on doit supprimer les conflits
- * @param conflicts La liste des fichiers en conflits
- * @param message Le message (optionnel)
- */
-void createDeletionCommit(const char *branch, List *conflicts, const char* message);
 
 #endif

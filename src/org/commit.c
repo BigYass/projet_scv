@@ -10,7 +10,7 @@
 #include "../include/org/workfile.h"
 #include "../include/org/refs.h"
 #include "../include/org/branch.h"
-
+#include "../include/org/my_git.h"
 
 kvp *createKeyVal(const char *key, const char *val)
 {
@@ -311,26 +311,104 @@ void restoreCommit(const char *hash)
   
 }
 
-void myGitCheckoutCommit(const char* pattern)
+List *getAllCommits()
 {
-  List *L = getAllCommits();
-  List *filtered_list = filterList(L, pattern);
+  List *L = initList();
+  List *content = listdir(REFS_DIRECTORY);
 
-  int len = sizeList(filtered_list);
-  if (len == 1){
-    char *commit_hash = (*L)->data;;
-    createUpdateRef("HEAD", commit_hash);
-    restoreCommit(commit_hash);
-  }
-  else if (len == 0){
-    printf("Aucun hash ne commence par "YELLOW"%s"RESET"...\n", pattern);
-  }
-  else {
-    printf("Plusieurs hash commencent par "YELLOW"%s"RESET" :\n", pattern);
-    for(Cell *c = *filtered_list; c; c = c->next)
-      printf(" -> %s\n", c->data);
+  for(Cell *cursor = *content; cursor != NULL; cursor = cursor->next){
+    if(cursor->data[0] == '.') continue;
+
+    List *list = branchList(cursor->data);
+    Cell *cell = *list;
+
+    while(cell != NULL){
+      if(searchList(L, cell->data) == NULL){
+        insertFirst(L, buildCell(cell->data));
+      }
+      cell = cell->next;
+    }
+
+    freeList(list);
   }
 
-  freeList(L);
-  freeList(filtered_list);
+  freeList(content);
+
+  return L;
 }
+
+
+void createDeletionCommit(const char *branch, List *conflicts, const char* message){
+  char *current_branch = getCurrentBranch();
+  myGitCheckoutBranch(branch);
+
+  char *branch_hash = getRef(branch);
+  if(branch_hash == NULL){
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "getRef", branch);
+    free(current_branch);
+    return;
+  }
+
+  char *commit_path = commitPath(branch_hash);
+  if(commit_path == NULL){
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "commitPath", branch_hash);
+    free(branch_hash);  
+    free(current_branch);
+    return;
+  }
+  free(branch_hash);
+
+
+  Commit *commit = ftc(commit_path);
+  if(commit == NULL){
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "ftc", commit_path);
+    free(commit_path);
+    free(current_branch);
+    return;
+  }
+  free(commit_path);
+
+  char *wt_hash = commitGet(commit, TREE_KEY);
+  freeCommit(commit);
+  if(wt_hash == NULL){
+    err_log(E_ERR, "Bruh, commit[\"tree\"] = null");
+    free(current_branch);
+    return;
+  }
+
+  char *wt_path = workTreePath(wt_hash);
+  if(wt_path == NULL){
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "workTreePath", wt_hash);
+    free(wt_hash);
+    free(current_branch);
+    return;
+  }
+  free(wt_hash);
+  
+  WorkTree *wt = ftwt(wt_path);
+  if(wt == NULL){
+    err_logf(E_ERR, E_MSG_FUNC_NULL, "ftwt", wt_path);
+    free(current_branch);
+    free(wt_path);
+    return;
+  }
+  free(wt_path);
+    
+
+  remove(".add");
+
+  createFile(".add");
+
+  for(int i = 0; i < wt->n; i++)
+    if(!searchList(conflicts, wt->tab[i].name))
+      myGitAdd(wt->tab[i].name);
+
+  freeWorkTree(wt);
+
+  myGitCommit(branch, message);
+
+  myGitCheckoutBranch(current_branch);
+
+  free(current_branch);
+}
+
