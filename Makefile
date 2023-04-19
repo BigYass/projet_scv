@@ -1,8 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-# Grrr paw
-
 SRC = src
 BIN = bin
 OBJ = obj

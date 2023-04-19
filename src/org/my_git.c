@@ -6,6 +6,7 @@
 #include "../include/org/workfile.h"
 #include "../include/org/refs.h"
 #include "../include/org/commit.h"
+#include "../include/org/branch.h"
 #include "../include/const.h"
 #include "../include/util/file.h"
 #include "../include/util/hash.h"
@@ -137,7 +138,7 @@ void myGitCheckoutCommit(const char* pattern)
 List* merge(const char* remote_branch, const char* message){
   if(remote_branch == NULL){
     err_log(E_ERR, E_MSG_PARAM_NULL);
-    exit(-1);
+    return NULL;
   }
 
   char *current_branch_name = getCurrentBranch();

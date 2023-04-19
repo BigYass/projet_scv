@@ -56,6 +56,4 @@ typedef enum error_type {
  */
 void __err_logf(const char* __file, const int __line, const char* __function, error_type err_type, const char* format, ...);
 
-
-
 #endif
